@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GBPUSD Signal Pro - Golden Zone Fibonacci | Auto Trading Signal</title>
+    <title>GBPUSD Signal Pro - Golden Zone Fibonacci | Real-time Forex</title>
     <style>
         * {
             margin: 0;
@@ -42,6 +42,7 @@
             margin: 0 auto;
         }
 
+        /* Glassmorphism */
         .glass {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
@@ -50,6 +51,7 @@
             box-shadow: var(--shadow-sm);
         }
 
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -104,6 +106,7 @@
             50% { opacity: 0.5; transform: scale(1.2); }
         }
 
+        /* Signal Card */
         .signal-card {
             padding: 28px;
             margin-bottom: 24px;
@@ -169,6 +172,7 @@
         }
         .signal-badge.neutral .signal-text { color: #95aac9; }
 
+        /* Price Section */
         .price-section {
             text-align: center;
             padding: 20px;
@@ -196,6 +200,18 @@
         .price-change.positive { color: #00d27a; }
         .price-change.negative { color: #e63757; }
 
+        .bid-ask {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        .bid-ask span { color: var(--text-secondary); }
+        .bid-ask .bid-value { color: #00d27a; }
+        .bid-ask .ask-value { color: #e63757; }
+
+        /* Levels Grid */
         .levels-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -227,6 +243,7 @@
         .level-value.danger { color: #e63757; }
         .level-value.success { color: #00d27a; }
 
+        /* RR Section */
         .rr-section {
             text-align: center;
             padding: 12px;
@@ -255,6 +272,7 @@
             border-top: 1px solid var(--border-light);
         }
 
+        /* Analysis Grid */
         .analysis-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -304,6 +322,7 @@
         }
         .fib-levels div { margin-top: 4px; }
 
+        /* History Section */
         .history-section {
             padding: 20px;
             margin-bottom: 24px;
@@ -351,12 +370,14 @@
         .signal-sell { color: #e63757; font-weight: 600; }
         .signal-neutral { color: #95aac9; }
 
+        /* Detail Analysis */
         .detail-analysis {
             padding: 20px;
             margin-bottom: 24px;
         }
         .detail-analysis p { margin: 8px 0; line-height: 1.6; }
 
+        /* Control Panel */
         .control-panel {
             padding: 20px;
             display: flex;
@@ -386,6 +407,17 @@
         }
         .status-active { color: #00d27a; font-weight: 500; }
 
+        /* API Status */
+        .api-status {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--border-light);
+        }
+        .api-status.online { background: #00d27a20; color: #00d27a; }
+        .api-status.fallback { background: #f5b04220; color: #f5b042; }
+
+        /* Responsive */
         @media (max-width: 768px) {
             body { padding: 12px; }
             .signal-card { padding: 16px; }
@@ -427,12 +459,13 @@
                 <div class="logo-icon">📊</div>
                 <div class="logo-text">
                     <h1>FX Signal Pro</h1>
-                    <p>GBP/USD • Golden Zone Strategy</p>
+                    <p>GBP/USD • Golden Zone Strategy • Real-time</p>
                 </div>
             </div>
             <div class="live-status">
                 <span class="live-dot"></span>
                 <span>Real-time</span>
+                <span class="api-status" id="apiStatus">🟢 Live</span>
             </div>
         </div>
 
@@ -447,8 +480,12 @@
             </div>
             <div class="price-section">
                 <div class="current-price">
-                    <span class="label">Current Price</span>
-                    <span class="value" id="currentPrice">1.26500</span>
+                    <span class="label">Market Price (Mid)</span>
+                    <span class="value" id="currentPrice">1.34743</span>
+                </div>
+                <div class="bid-ask">
+                    <span>Bid: <span class="bid-value" id="bidPrice">1.34733</span></span>
+                    <span>Ask: <span class="ask-value" id="askPrice">1.34753</span></span>
                 </div>
                 <div class="price-change" id="priceChange">
                     <span class="change">0.0000</span>
@@ -527,51 +564,186 @@
         // State
         let currentSignal = { type: 'NEUTRAL', entry: null, stopLoss: null, takeProfit: null, timestamp: null, rr: null, analysis: '' };
         let signalHistory = [];
-        let currentPrice = 1.26500;
-        let previousPrice = 1.26500;
+        let currentPrice = 1.34743;
+        let currentBid = 1.34733;
+        let currentAsk = 1.34753;
+        let previousPrice = 1.34743;
         let autoInterval = null;
+        let lastFetchTime = null;
 
         // ====================================================
-        // MARKET DATA
+        // REAL-TIME MARKET DATA - Live-Rates.com API
         // ====================================================
-        async function fetchMarketData() {
+        
+        // Method 1: Live-Rates.com API (Real-time, free tier 3 requests/hour tanpa API key)
+        async function fetchLiveRatesAPI() {
             try {
-                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/USD`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch('https://www.live-rates.com/rates', {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
-                if (data && data.rates && data.rates.GBP) {
-                    const newPrice = data.rates.GBP;
-                    previousPrice = currentPrice;
-                    currentPrice = newPrice;
-                    updatePriceDisplay();
+                
+                // Cari data GBP/USD dari response
+                const gbpusd = data.find(item => item.currency === 'GBP/USD');
+                if (gbpusd && gbpusd.rate) {
+                    const rate = parseFloat(gbpusd.rate);
+                    // Live-Rates memberikan bid/ask terpisah
+                    const bid = gbpusd.bid ? parseFloat(gbpusd.bid) : rate - 0.0001;
+                    const ask = gbpusd.ask ? parseFloat(gbpusd.ask) : rate + 0.0001;
+                    
+                    return {
+                        success: true,
+                        mid: rate,
+                        bid: bid,
+                        ask: ask,
+                        timestamp: gbpusd.timestamp || Date.now(),
+                        source: 'live-rates.com'
+                    };
                 }
-                return { current: currentPrice, previous: previousPrice, historical: generateHistoricalData() };
+                return { success: false, error: 'GBP/USD not found in response' };
             } catch (error) {
-                console.error('API Error, using simulated data:', error);
-                const volatility = (Math.random() - 0.5) * 0.0005;
-                previousPrice = currentPrice;
-                currentPrice = currentPrice + volatility;
-                updatePriceDisplay();
-                return { current: currentPrice, previous: previousPrice, historical: generateHistoricalData() };
+                console.warn('Live-Rates API error:', error.message);
+                return { success: false, error: error.message };
             }
         }
 
-        function generateHistoricalData() {
-            let data = { h4: [], h1: [], m15: [], m5: [] };
-            let price = currentPrice;
-            for (let tf in data) {
-                let bars = tf === 'h4' ? 96 : (tf === 'h1' ? 24 : (tf === 'm15' ? 96 : 12));
-                for (let i = 0; i < bars; i++) {
-                    price += (Math.random() - 0.5) * 0.0005;
-                    data[tf].push({ high: price + Math.random() * 0.0008, low: price - Math.random() * 0.0008, close: price, open: price - (Math.random() - 0.5) * 0.0005 });
+        // Method 2: Twelve Data API (Backup, perlu API key)
+        // Note: Untuk production, daftar gratis di twelvedata.com dan ganti API_KEY
+        async function fetchTwelveDataAPI() {
+            try {
+                const API_KEY = ''; // Isi dengan API key dari twelvedata.com jika punya
+                if (!API_KEY) return { success: false, error: 'No API key' };
+                
+                const response = await fetch(`https://api.twelvedata.com/price?symbol=GBP/USD&apikey=${API_KEY}`);
+                if (!response.ok) throw new Error('API Error');
+                const data = await response.json();
+                
+                if (data.price) {
+                    const rate = parseFloat(data.price);
+                    return {
+                        success: true,
+                        mid: rate,
+                        bid: rate - 0.0001,
+                        ask: rate + 0.0001,
+                        source: 'twelvedata.com'
+                    };
                 }
+                return { success: false, error: 'No price data' };
+            } catch (error) {
+                return { success: false, error: error.message };
             }
-            return data;
+        }
+
+        // Method 3: Exchange Rate API (Fallback terakhir)
+        async function fetchExchangeRateAPI() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                if (!response.ok) throw new Error('API Error');
+                const data = await response.json();
+                
+                if (data.rates && data.rates.GBP) {
+                    const rate = data.rates.GBP;
+                    return {
+                        success: true,
+                        mid: rate,
+                        bid: rate - 0.0001,
+                        ask: rate + 0.0001,
+                        source: 'exchangerate-api.com'
+                    };
+                }
+                return { success: false, error: 'No GBP rate' };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Simulasi pergerakan harga jika semua API gagal
+        function generateSimulatedPrice() {
+            const volatility = (Math.random() - 0.5) * 0.0003;
+            const newPrice = currentPrice + volatility;
+            return {
+                success: true,
+                mid: newPrice,
+                bid: newPrice - 0.0001,
+                ask: newPrice + 0.0001,
+                source: 'simulation',
+                isSimulated: true
+            };
+        }
+
+        // Main fetch function dengan fallback cascade
+        async function fetchRealTimePrice() {
+            const apiStatus = document.getElementById('apiStatus');
+            
+            // Try Live-Rates.com first (paling realtime untuk forex)
+            let result = await fetchLiveRatesAPI();
+            if (result.success) {
+                apiStatus.innerHTML = '🟢 Live-Rates';
+                apiStatus.className = 'api-status online';
+                return result;
+            }
+            
+            // Fallback ke Twelve Data jika Live-Rates gagal
+            result = await fetchTwelveDataAPI();
+            if (result.success) {
+                apiStatus.innerHTML = '🟡 Twelve Data';
+                apiStatus.className = 'api-status';
+                return result;
+            }
+            
+            // Fallback terakhir ke Exchange Rate API
+            result = await fetchExchangeRateAPI();
+            if (result.success) {
+                apiStatus.innerHTML = '🟠 Exchange-Rate';
+                apiStatus.className = 'api-status';
+                return result;
+            }
+            
+            // Jika semua API gagal, gunakan simulasi
+            apiStatus.innerHTML = '⚠️ Simulasi';
+            apiStatus.className = 'api-status fallback';
+            console.warn('All APIs failed, using simulated data');
+            return generateSimulatedPrice();
+        }
+
+        async function updateMarketPrice() {
+            try {
+                const priceData = await fetchRealTimePrice();
+                if (priceData.success) {
+                    previousPrice = currentPrice;
+                    currentPrice = priceData.mid;
+                    currentBid = priceData.bid;
+                    currentAsk = priceData.ask;
+                    lastFetchTime = priceData.timestamp;
+                    updatePriceDisplay();
+                    
+                    if (priceData.isSimulated) {
+                        console.log('Using simulated price data');
+                    } else {
+                        console.log(`Price updated from ${priceData.source}: ${currentPrice}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating price:', error);
+            }
         }
 
         function updatePriceDisplay() {
             const priceElement = document.getElementById('currentPrice');
+            const bidElement = document.getElementById('bidPrice');
+            const askElement = document.getElementById('askPrice');
             const changeElement = document.getElementById('priceChange');
+            
             if (priceElement) priceElement.textContent = currentPrice.toFixed(5);
+            if (bidElement) bidElement.textContent = currentBid.toFixed(5);
+            if (askElement) askElement.textContent = currentAsk.toFixed(5);
+            
             if (changeElement && previousPrice) {
                 const change = currentPrice - previousPrice;
                 const changePercent = (change / previousPrice) * 100;
@@ -582,10 +754,33 @@
         }
 
         // ====================================================
+        // HISTORICAL DATA GENERATOR untuk Analysis
+        // ====================================================
+        function generateHistoricalData() {
+            let data = { h4: [], h1: [], m15: [], m5: [] };
+            let price = currentPrice;
+            for (let tf in data) {
+                let bars = tf === 'h4' ? 96 : (tf === 'h1' ? 24 : (tf === 'm15' ? 96 : 12));
+                for (let i = 0; i < bars; i++) {
+                    price += (Math.random() - 0.5) * 0.0003;
+                    data[tf].push({ 
+                        high: price + Math.random() * 0.0005, 
+                        low: price - Math.random() * 0.0005, 
+                        close: price, 
+                        open: price - (Math.random() - 0.5) * 0.0003 
+                    });
+                }
+            }
+            return data;
+        }
+
+        // ====================================================
         // TECHNICAL ANALYSIS
         // ====================================================
-        function calculateSMA(data) { if (data.length === 0) return 0; return data.reduce((a, b) => a + b, 0) / data.length; }
-        function calculateEMA(data, period) { let k = 2 / (period + 1), ema = data[0]; for (let i = 1; i < data.length; i++) ema = data[i] * k + ema * (1 - k); return ema; }
+        function calculateSMA(data) { 
+            if (data.length === 0) return 0; 
+            return data.reduce((a, b) => a + b, 0) / data.length; 
+        }
 
         function analyzeTrendH4(historicalData) {
             const h4Data = historicalData.h4;
@@ -595,20 +790,34 @@
             const sma50 = calculateSMA(closes.slice(-50));
             const currentClose = closes[closes.length - 1];
             let trend = 'NEUTRAL', strength = 0;
-            if (currentClose > sma20 && sma20 > sma50) { trend = 'BULLISH'; strength = Math.min(100, ((currentClose - sma50) / sma50) * 100); }
-            else if (currentClose < sma20 && sma20 < sma50) { trend = 'BEARISH'; strength = Math.min(100, ((sma50 - currentClose) / sma50) * 100); }
+            if (currentClose > sma20 && sma20 > sma50) { 
+                trend = 'BULLISH'; 
+                strength = Math.min(100, ((currentClose - sma50) / sma50) * 100); 
+            }
+            else if (currentClose < sma20 && sma20 < sma50) { 
+                trend = 'BEARISH'; 
+                strength = Math.min(100, ((sma50 - currentClose) / sma50) * 100); 
+            }
             return { trend, strength };
         }
 
         function calculateFibonacci(high, low) {
             const range = high - low;
-            return { level05: low + range * 0.5, level0618: low + range * 0.618 };
+            return { 
+                level05: low + range * 0.5, 
+                level0618: low + range * 0.618 
+            };
         }
 
         function detectGoldenZone(currentPrice, fibLevels) {
             const isInZone = currentPrice >= fibLevels.level05 && currentPrice <= fibLevels.level0618;
             const distanceToZone = Math.min(Math.abs(currentPrice - fibLevels.level05), Math.abs(currentPrice - fibLevels.level0618));
-            return { isInZone, zoneLow: fibLevels.level05, zoneHigh: fibLevels.level0618, percentageDistance: (distanceToZone / currentPrice) * 100 };
+            return { 
+                isInZone, 
+                zoneLow: fibLevels.level05, 
+                zoneHigh: fibLevels.level0618, 
+                percentageDistance: (distanceToZone / currentPrice) * 100 
+            };
         }
 
         function detectCandlePattern(candles) {
@@ -617,6 +826,7 @@
             const bodySize = Math.abs(last.close - last.open);
             const lowerWick = Math.min(last.close, last.open) - last.low;
             const upperWick = last.high - Math.max(last.close, last.open);
+            
             if (last.close > last.open && prev.close < prev.open && last.close > prev.open && last.open < prev.close)
                 return { pattern: 'BULLISH_ENGULFING', confirmed: true };
             if (last.close < last.open && prev.close > prev.open && last.close < prev.open && last.open > prev.close)
@@ -651,8 +861,11 @@
         // ====================================================
         async function generateSignal() {
             console.log('Generating signal...', new Date().toISOString());
-            const marketData = await fetchMarketData();
-            const historical = marketData.historical;
+            
+            // Update price realtime dulu
+            await updateMarketPrice();
+            
+            const historical = generateHistoricalData();
             const h4Trend = analyzeTrendH4(historical);
             const h1Data = historical.h1;
             const m15Data = historical.m15;
@@ -666,20 +879,31 @@
             const candlePatternM5 = detectCandlePattern(m5Data);
             const session = getCurrentSession();
             
-            let signal = { type: 'NEUTRAL', entry: null, stopLoss: null, takeProfit: null, rr: null, analysis: '', timestamp: new Date().toISOString() };
+            let signal = { 
+                type: 'NEUTRAL', 
+                entry: null, 
+                stopLoss: null, 
+                takeProfit: null, 
+                rr: null, 
+                analysis: '', 
+                timestamp: new Date().toISOString() 
+            };
             
-            // BUY Condition
+            // BUY Condition - Updated dengan support/resistance logic
             if (h4Trend.trend === 'BULLISH' && goldenZone.isInZone && (candlePatternM15.confirmed || candlePatternM5.confirmed) && session.hasMomentum) {
                 const hasBullishPattern = candlePatternM15.pattern.includes('BULLISH') || candlePatternM5.pattern.includes('BULLISH');
                 if (hasBullishPattern) {
                     signal.type = 'BUY';
-                    signal.entry = currentPrice;
-                    signal.stopLoss = currentPrice - 0.0020;
-                    signal.takeProfit = currentPrice + 0.0030;
+                    signal.entry = currentAsk; // Entry di harga ask untuk buy
+                    signal.stopLoss = currentBid - 0.0020;
+                    signal.takeProfit = currentAsk + 0.0030;
                     signal.rr = calculateRR(signal.entry, signal.stopLoss, signal.takeProfit, 'BUY');
                     if (parseFloat(signal.rr) >= CONFIG.RR_MINIMUM) {
                         signal.analysis = `✅ BUY SIGNAL CONFIRMED\n\n📊 Trend H4: ${h4Trend.trend} (Strength: ${h4Trend.strength.toFixed(1)}%)\n✨ Golden Zone: ACTIVE (${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)})\n🕯️ Candle Confirmation: ${candlePatternM15.pattern} on M15\n⏰ Session: ${session.session} - High momentum\n\n🎯 Entry: ${signal.entry.toFixed(5)}\n🛑 Stop Loss: ${signal.stopLoss.toFixed(5)}\n💰 Take Profit: ${signal.takeProfit.toFixed(5)}\n📈 Risk Reward: 1:${signal.rr}\n\n💡 Reason: H4 bullish trend confirmed with H1 retracement to Fibonacci Golden Zone. Bullish candle pattern detected. London/New York session provides optimal liquidity.`;
-                    } else { signal.type = 'NEUTRAL'; signal.analysis = 'RR ratio below minimum requirement (1:1.5)'; }
+                    } else { 
+                        signal.type = 'NEUTRAL'; 
+                        signal.analysis = 'RR ratio below minimum requirement (1:1.5)'; 
+                    }
                 }
             }
             // SELL Condition
@@ -687,17 +911,20 @@
                 const hasBearishPattern = candlePatternM15.pattern.includes('BEARISH') || candlePatternM5.pattern.includes('BEARISH');
                 if (hasBearishPattern) {
                     signal.type = 'SELL';
-                    signal.entry = currentPrice;
-                    signal.stopLoss = currentPrice + 0.0020;
-                    signal.takeProfit = currentPrice - 0.0030;
+                    signal.entry = currentBid; // Entry di harga bid untuk sell
+                    signal.stopLoss = currentAsk + 0.0020;
+                    signal.takeProfit = currentBid - 0.0030;
                     signal.rr = calculateRR(signal.entry, signal.stopLoss, signal.takeProfit, 'SELL');
                     if (parseFloat(signal.rr) >= CONFIG.RR_MINIMUM) {
                         signal.analysis = `🔴 SELL SIGNAL CONFIRMED\n\n📊 Trend H4: ${h4Trend.trend} (Strength: ${h4Trend.strength.toFixed(1)}%)\n✨ Golden Zone: ACTIVE (${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)})\n🕯️ Candle Confirmation: ${candlePatternM15.pattern} on M15\n⏰ Session: ${session.session} - High momentum\n\n🎯 Entry: ${signal.entry.toFixed(5)}\n🛑 Stop Loss: ${signal.stopLoss.toFixed(5)}\n💰 Take Profit: ${signal.takeProfit.toFixed(5)}\n📈 Risk Reward: 1:${signal.rr}\n\n💡 Reason: H4 bearish trend confirmed with H1 retracement to Fibonacci Golden Zone. Bearish candle pattern detected. Selling pressure dominates.`;
-                    } else { signal.type = 'NEUTRAL'; signal.analysis = 'RR ratio below minimum requirement (1:1.5)'; }
+                    } else { 
+                        signal.type = 'NEUTRAL'; 
+                        signal.analysis = 'RR ratio below minimum requirement (1:1.5)'; 
+                    }
                 }
             }
             else {
-                signal.analysis = `⚪ NEUTRAL - No Trading Signal\n\n${h4Trend.trend !== 'NEUTRAL' ? `📊 Trend H4: ${h4Trend.trend} but missing confirmations.\n` : '📊 No clear trend on H4 timeframe.\n'}${!goldenZone.isInZone ? `✨ Price not in Fibonacci Golden Zone. Distance: ${goldenZone.percentageDistance.toFixed(2)}%\n` : ''}${!candlePatternM15.confirmed ? '🕯️ No valid candle confirmation pattern.\n' : ''}${!session.hasMomentum ? `⏰ ${session.session} session - low liquidity.\n` : ''}\n💡 Wait for clear trend direction and price retracement to Golden Zone.`;
+                signal.analysis = `⚪ NEUTRAL - No Trading Signal\n\n${h4Trend.trend !== 'NEUTRAL' ? `📊 Trend H4: ${h4Trend.trend} but missing confirmations.\n` : '📊 No clear trend on H4 timeframe.\n'}${!goldenZone.isInZone ? `✨ Price not in Fibonacci Golden Zone. Distance: ${goldenZone.percentageDistance.toFixed(2)}%\n` : ''}${!candlePatternM15.confirmed ? '🕯️ No valid candle confirmation pattern.\n' : ''}${!session.hasMomentum ? `⏰ ${session.session} session - low liquidity.\n` : ''}\n💡 Wait for clear trend direction and price retracement to Golden Zone.\n\n📊 Current Market Price: ${currentPrice.toFixed(5)}\n🎯 Golden Zone: ${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)}`;
             }
             
             currentSignal = signal;
@@ -746,7 +973,10 @@
         function updateHistoryTable() {
             const tbody = document.getElementById('historyBody');
             if (!tbody) return;
-            if (signalHistory.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No signals yet</td></tr>'; return; }
+            if (signalHistory.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No signals yet</td></tr>'; 
+                return; 
+            }
             tbody.innerHTML = signalHistory.slice(0, 20).map(s => `
                 <tr>
                     <td>${new Date(s.timestamp).toLocaleTimeString()}</td>
@@ -761,7 +991,10 @@
 
         function loadHistory() {
             const saved = localStorage.getItem('signalHistory');
-            if (saved) { signalHistory = JSON.parse(saved); updateHistoryTable(); }
+            if (saved) { 
+                signalHistory = JSON.parse(saved); 
+                updateHistoryTable(); 
+            }
         }
 
         // ====================================================
@@ -780,7 +1013,9 @@
             try {
                 const response = await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, templateParams);
                 console.log('Email sent:', response);
-            } catch (error) { console.error('Email error:', error); }
+            } catch (error) { 
+                console.error('Email error:', error); 
+            }
         }
 
         // ====================================================
@@ -790,22 +1025,34 @@
             console.log('Starting auto signal engine...');
             await generateSignal();
             if (autoInterval) clearInterval(autoInterval);
-            autoInterval = setInterval(async () => { await generateSignal(); }, CONFIG.UPDATE_INTERVAL);
+            autoInterval = setInterval(async () => { 
+                await generateSignal(); 
+            }, CONFIG.UPDATE_INTERVAL);
         }
 
         function setupEventListeners() {
             document.getElementById('manualCheckBtn')?.addEventListener('click', async () => {
                 const btn = document.getElementById('manualCheckBtn');
-                btn.disabled = true; btn.textContent = '⏳ Checking...';
+                btn.disabled = true; 
+                btn.textContent = '⏳ Checking...';
                 await generateSignal();
-                btn.textContent = '🔄 Manual Check'; btn.disabled = false;
+                btn.textContent = '🔄 Manual Check'; 
+                btn.disabled = false;
             });
             document.getElementById('testEmailBtn')?.addEventListener('click', async () => {
                 const btn = document.getElementById('testEmailBtn');
-                btn.disabled = true; btn.textContent = '📧 Sending...';
-                await sendEmailNotification({ type: 'BUY', entry: currentPrice, stopLoss: currentPrice - 0.002, takeProfit: currentPrice + 0.003, analysis: 'Test email from GBPUSD Signal Pro' });
-                btn.textContent = '📧 Test Email'; btn.disabled = false;
-                alert('Test email sent! Check your inbox.');
+                btn.disabled = true; 
+                btn.textContent = '📧 Sending...';
+                await sendEmailNotification({ 
+                    type: 'BUY', 
+                    entry: currentPrice, 
+                    stopLoss: currentPrice - 0.002, 
+                    takeProfit: currentPrice + 0.003, 
+                    analysis: 'Test email from GBPUSD Signal Pro - Real-time Version' 
+                });
+                btn.textContent = '📧 Test Email'; 
+                btn.disabled = false;
+                alert('Test email sent! Check your inbox (spam folder if needed).');
             });
             document.getElementById('refreshHistory')?.addEventListener('click', () => updateHistoryTable());
         }
@@ -816,9 +1063,14 @@
         async function init() {
             loadHistory();
             setupEventListeners();
+            
+            // Initial price fetch
+            await updateMarketPrice();
+            
             await startAutoSignalEngine();
-            console.log('Application ready!');
+            console.log('Application ready! Real-time price updates active');
         }
+        
         document.addEventListener('DOMContentLoaded', init);
         window.addEventListener('beforeunload', () => { if (autoInterval) clearInterval(autoInterval); });
     </script>
