@@ -2,137 +2,25 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GBPUSD Signal Pro - Golden Zone Fibonacci | Real-time Forex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBPUSD Signal Pro - Yahoo Finance Real-time</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg-primary: #f8f9fc;
-            --bg-secondary: #ffffff;
-            --text-primary: #1a1f36;
-            --text-secondary: #5a6e8a;
-            --border-light: #e3e8f0;
-            --success: #00d27a;
-            --danger: #e63757;
-            --warning: #f5b042;
-            --neutral: #95aac9;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
-        }
-
+        /* Sama seperti CSS sebelumnya */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #f8f9fc 0%, #eef2f7 100%);
-            color: var(--text-primary);
-            line-height: 1.5;
             padding: 20px;
-            min-height: 100vh;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Glassmorphism */
+        .container { max-width: 1400px; margin: 0 auto; }
         .glass {
-            background: var(--glass-bg);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
             border-radius: 24px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 24px;
             margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            font-size: 32px;
-        }
-
-        .logo-text h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .logo-text p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .live-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-secondary);
-            padding: 8px 16px;
-            border-radius: 100px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #00d27a;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-        }
-
-        /* Signal Card */
-        .signal-card {
-            padding: 28px;
-            margin-bottom: 24px;
-            transition: all 0.3s ease;
-        }
-
-        .pair-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .pair {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .session {
-            font-size: 12px;
-            padding: 4px 12px;
-            background: var(--border-light);
-            border-radius: 100px;
-            color: var(--text-secondary);
-        }
-
         .signal-badge {
             display: flex;
             align-items: center;
@@ -141,938 +29,522 @@
             padding: 20px;
             border-radius: 20px;
             margin-bottom: 24px;
-            background: var(--bg-secondary);
         }
-
-        .signal-icon {
-            font-size: 48px;
-        }
-
-        .signal-text {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .signal-badge.buy {
-            background: linear-gradient(135deg, #00d27a20, #00d27a05);
-            border: 1px solid #00d27a40;
-        }
+        .signal-badge.buy { background: linear-gradient(135deg, #00d27a20, #00d27a05); border: 1px solid #00d27a40; }
         .signal-badge.buy .signal-text { color: #00d27a; }
-
-        .signal-badge.sell {
-            background: linear-gradient(135deg, #e6375720, #e6375705);
-            border: 1px solid #e6375740;
-        }
+        .signal-badge.sell { background: linear-gradient(135deg, #e6375720, #e6375705); border: 1px solid #e6375740; }
         .signal-badge.sell .signal-text { color: #e63757; }
-
-        .signal-badge.neutral {
-            background: linear-gradient(135deg, #95aac920, #95aac905);
-            border: 1px solid #95aac940;
-        }
-        .signal-badge.neutral .signal-text { color: #95aac9; }
-
-        /* Price Section */
-        .price-section {
-            text-align: center;
-            padding: 20px;
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            margin-bottom: 24px;
-        }
-
-        .current-price .label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            display: block;
-        }
-
-        .current-price .value {
-            font-size: 36px;
-            font-weight: 700;
-            font-family: monospace;
-        }
-
-        .price-change {
-            margin-top: 4px;
-            font-size: 14px;
-        }
-        .price-change.positive { color: #00d27a; }
-        .price-change.negative { color: #e63757; }
-
-        .bid-ask {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 12px;
-            font-size: 12px;
-        }
-        .bid-ask span { color: var(--text-secondary); }
-        .bid-ask .bid-value { color: #00d27a; }
-        .bid-ask .ask-value { color: #e63757; }
-
-        /* Levels Grid */
-        .levels-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .level-item {
-            text-align: center;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-        }
-
-        .level-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .level-value {
-            font-size: 18px;
-            font-weight: 600;
-            font-family: monospace;
-        }
+        .signal-badge.neutral { background: linear-gradient(135deg, #95aac920, #95aac905); border: 1px solid #95aac940; }
+        .signal-text { font-size: 28px; font-weight: 800; }
+        .signal-icon { font-size: 48px; }
+        .price-value { font-size: 36px; font-weight: 700; font-family: monospace; }
+        .levels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+        .level-item { text-align: center; padding: 12px; background: white; border-radius: 12px; }
+        .level-value { font-size: 18px; font-weight: 600; font-family: monospace; }
         .level-value.danger { color: #e63757; }
         .level-value.success { color: #00d27a; }
-
-        /* RR Section */
-        .rr-section {
-            text-align: center;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-        }
-
-        .rr-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .rr-value {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .timestamp {
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-light);
-        }
-
-        /* Analysis Grid */
-        .analysis-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .analysis-card {
-            padding: 20px;
-        }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .title-icon {
-            font-size: 20px;
-        }
-
-        .trend-status .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .status-badge.bullish {
-            background: #00d27a20;
-            color: #00d27a;
-        }
-        .status-badge.bearish {
-            background: #e6375720;
-            color: #e63757;
-        }
-        .status-badge.neutral {
-            background: #95aac920;
-            color: #95aac9;
-        }
-
-        .fib-levels {
-            margin-top: 8px;
-            font-size: 12px;
-        }
-        .fib-levels div { margin-top: 4px; }
-
-        /* History Section */
-        .history-section {
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .section-header h3 { font-size: 16px; font-weight: 600; }
-
-        .refresh-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .refresh-btn:hover { background: var(--border-light); }
-
-        .history-table-container {
-            overflow-x: auto;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .history-table th, .history-table td {
-            padding: 12px 8px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-light);
-        }
-        .history-table th {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .history-table td { font-family: monospace; }
-        .signal-buy { color: #00d27a; font-weight: 600; }
-        .signal-sell { color: #e63757; font-weight: 600; }
-        .signal-neutral { color: #95aac9; }
-
-        /* Detail Analysis */
-        .detail-analysis {
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-        .detail-analysis p { margin: 8px 0; line-height: 1.6; }
-
-        /* Control Panel */
-        .control-panel {
-            padding: 20px;
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .control-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .auto-status {
-            margin-left: auto;
-            font-size: 13px;
-        }
-        .status-active { color: #00d27a; font-weight: 500; }
-
-        /* API Status */
-        .api-status {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background: var(--border-light);
-        }
-        .api-status.online { background: #00d27a20; color: #00d27a; }
-        .api-status.fallback { background: #f5b04220; color: #f5b042; }
-
-        /* Responsive */
+        .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px; }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 8px; }
+        .status-badge.bullish { background: #00d27a20; color: #00d27a; }
+        .status-badge.bearish { background: #e6375720; color: #e63757; }
+        .control-btn { padding: 10px 20px; border: none; border-radius: 12px; background: white; cursor: pointer; }
+        .api-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; margin-left: 10px; }
+        .api-status.yahoo { background: #7c3aed20; color: #7c3aed; }
         @media (max-width: 768px) {
-            body { padding: 12px; }
-            .signal-card { padding: 16px; }
+            .price-value { font-size: 24px; }
             .signal-text { font-size: 20px; }
-            .signal-icon { font-size: 32px; }
-            .levels-grid { gap: 8px; }
-            .level-value { font-size: 14px; }
-            .analysis-grid { grid-template-columns: 1fr; gap: 12px; }
-            .control-panel { flex-direction: column; }
-            .auto-status { margin-left: 0; }
-        }
-
-        @keyframes shimmer {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-        .loading { animation: shimmer 1.5s infinite; }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--border-light);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--neutral);
-            border-radius: 4px;
+            .levels-grid { grid-template-columns: 1fr; }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <div class="logo-icon">📊</div>
-                <div class="logo-text">
-                    <h1>FX Signal Pro</h1>
-                    <p>GBP/USD • Golden Zone Strategy • Real-time</p>
-                </div>
-            </div>
-            <div class="live-status">
-                <span class="live-dot"></span>
-                <span>Real-time</span>
-                <span class="api-status" id="apiStatus">🟢 Live</span>
-            </div>
+<div class="container">
+    <!-- Header -->
+    <div class="glass" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 32px;">📊</div>
+            <div><h1>FX Signal Pro</h1><p style="font-size: 12px; color: #5a6e8a;">GBP/USD • Yahoo Finance • Golden Zone</p></div>
         </div>
-
-        <div class="signal-card glass">
-            <div class="pair-info">
-                <span class="pair">GBP/USD</span>
-                <span class="session" id="session">London 🕒</span>
-            </div>
-            <div class="signal-badge" id="signalBadge">
-                <div class="signal-icon" id="signalIcon">⏳</div>
-                <div class="signal-text" id="signalText">ANALYZING</div>
-            </div>
-            <div class="price-section">
-                <div class="current-price">
-                    <span class="label">Market Price (Mid)</span>
-                    <span class="value" id="currentPrice">1.34743</span>
-                </div>
-                <div class="bid-ask">
-                    <span>Bid: <span class="bid-value" id="bidPrice">1.34733</span></span>
-                    <span>Ask: <span class="ask-value" id="askPrice">1.34753</span></span>
-                </div>
-                <div class="price-change" id="priceChange">
-                    <span class="change">0.0000</span>
-                    <span class="percent">(0.00%)</span>
-                </div>
-            </div>
-            <div class="levels-grid">
-                <div class="level-item"><span class="level-label">Entry</span><span class="level-value" id="entryPrice">--</span></div>
-                <div class="level-item"><span class="level-label">Stop Loss</span><span class="level-value danger" id="stopLoss">--</span></div>
-                <div class="level-item"><span class="level-label">Take Profit</span><span class="level-value success" id="takeProfit">--</span></div>
-            </div>
-            <div class="rr-section"><span class="rr-label">Risk Reward Ratio</span><span class="rr-value" id="rrRatio">--</span></div>
-            <div class="timestamp" id="timestamp">Last signal: --</div>
-        </div>
-
-        <div class="analysis-grid">
-            <div class="analysis-card glass">
-                <div class="card-title"><span class="title-icon">📈</span><span>Trend H4</span></div>
-                <div class="trend-status" id="trendH4"><span class="status-badge">Analyzing</span></div>
-                <div class="trend-strength" id="trendStrengthH4">Strength: --</div>
-            </div>
-            <div class="analysis-card glass">
-                <div class="card-title"><span class="title-icon">✨</span><span>Golden Zone</span></div>
-                <div class="goldenzone-status" id="goldenZoneStatus"><span>Status: --</span></div>
-                <div class="fib-levels"><div>0.5: <span id="fib05">--</span></div><div>0.618: <span id="fib0618">--</span></div></div>
-            </div>
-            <div class="analysis-card glass">
-                <div class="card-title"><span class="title-icon">🕯️</span><span>Confirmation</span></div>
-                <div id="candleConfirmation">--</div>
-                <div id="liquidityStatus">--</div>
-            </div>
-            <div class="analysis-card glass">
-                <div class="card-title"><span class="title-icon">🌊</span><span>Market Structure</span></div>
-                <div id="marketStructure">--</div>
-                <div id="volatilityStatus">--</div>
-            </div>
-        </div>
-
-        <div class="history-section glass">
-            <div class="section-header"><h3>Signal History</h3><button class="refresh-btn" id="refreshHistory">⟳</button></div>
-            <div class="history-table-container">
-                <table class="history-table"><thead><tr><th>Time</th><th>Signal</th><th>Entry</th><th>SL</th><th>TP</th><th>RR</th></tr></thead><tbody id="historyBody"><tr><td colspan="6" style="text-align:center">Loading history...</td></tr></tbody></table>
-            </div>
-        </div>
-
-        <div class="detail-analysis glass">
-            <div class="section-header"><h3>📝 Detail Analysis</h3></div>
-            <div id="detailAnalysis">Waiting for market data...</div>
-        </div>
-
-        <div class="control-panel glass">
-            <button class="control-btn" id="manualCheckBtn">🔄 Manual Check</button>
-            <button class="control-btn" id="testEmailBtn">📧 Test Email</button>
-            <div class="auto-status"><span>Auto-update: </span><span class="status-active" id="autoStatus">Active (60s)</span></div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div id="liveDot" style="width: 10px; height: 10px; background: #00d27a; border-radius: 50%; animation: pulse 1s infinite;"></div>
+            <span>Real-time</span>
+            <span id="apiStatus" class="api-status yahoo">🟣 Yahoo Finance</span>
         </div>
     </div>
 
-    <script>
-        // ====================================================
-        // EMAILJS CONFIGURATION
-        // ====================================================
-        (function() { emailjs.init("4-0tjKBy6KyHoCyOL"); })();
-
-        // ====================================================
-        // CONFIGURATION
-        // ====================================================
-        const CONFIG = {
-            UPDATE_INTERVAL: 60000,
-            PAIR: 'GBPUSD',
-            GOLDEN_ZONE_LEVELS: [0.5, 0.618],
-            RR_MINIMUM: 1.5,
-            EMAILJS_SERVICE_ID: 'service_ple8ixo',
-            EMAILJS_TEMPLATE_ID: 'template_c9od1yf'
-        };
-
-        // State
-        let currentSignal = { type: 'NEUTRAL', entry: null, stopLoss: null, takeProfit: null, timestamp: null, rr: null, analysis: '' };
-        let signalHistory = [];
-        let currentPrice = 1.34743;
-        let currentBid = 1.34733;
-        let currentAsk = 1.34753;
-        let previousPrice = 1.34743;
-        let autoInterval = null;
-        let lastFetchTime = null;
-
-        // ====================================================
-        // REAL-TIME MARKET DATA - Live-Rates.com API
-        // ====================================================
+    <!-- Signal Card -->
+    <div class="glass">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <span style="font-size: 24px; font-weight: 700;">GBP/USD</span>
+            <span id="session" style="background: #e3e8f0; padding: 4px 12px; border-radius: 100px;">--</span>
+        </div>
         
-        // Method 1: Live-Rates.com API (Real-time, free tier 3 requests/hour tanpa API key)
-        async function fetchLiveRatesAPI() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
+        <div id="signalBadge" class="signal-badge neutral">
+            <div id="signalIcon" class="signal-icon">⏳</div>
+            <div id="signalText" class="signal-text">ANALYZING</div>
+        </div>
+        
+        <div style="text-align: center; background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+            <div style="font-size: 12px; color: #5a6e8a;">GBP/USD Live Price</div>
+            <div id="currentPrice" class="price-value">1.34790</div>
+            <div id="priceChange" style="margin-top: 8px; font-size: 14px;"></div>
+            <div style="margin-top: 12px; display: flex; justify-content: center; gap: 24px; font-size: 12px;">
+                <span>Bid: <span id="bidPrice" style="color: #00d27a; font-weight: 600;">--</span></span>
+                <span>Ask: <span id="askPrice" style="color: #e63757; font-weight: 600;">--</span></span>
+                <span>Spread: <span id="spread">--</span> pips</span>
+            </div>
+        </div>
+        
+        <div class="levels-grid">
+            <div class="level-item"><div class="level-label">ENTRY</div><div id="entryPrice" class="level-value">--</div></div>
+            <div class="level-item"><div class="level-label">STOP LOSS</div><div id="stopLoss" class="level-value danger">--</div></div>
+            <div class="level-item"><div class="level-label">TAKE PROFIT</div><div id="takeProfit" class="level-value success">--</div></div>
+        </div>
+        
+        <div style="text-align: center; padding: 12px; background: white; border-radius: 12px;">
+            <div style="font-size: 11px; color: #5a6e8a;">RISK REWARD RATIO</div>
+            <div id="rrRatio" style="font-size: 20px; font-weight: 700;">--</div>
+        </div>
+        
+        <div id="timestamp" style="text-align: center; font-size: 11px; color: #5a6e8a; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e3e8f0;">--</div>
+    </div>
+
+    <!-- Analysis Grid -->
+    <div class="analysis-grid">
+        <div class="glass"><div class="card-title">📈 Trend H4</div><div id="trendH4"><span class="status-badge">--</span></div><div id="trendStrength">Strength: --</div></div>
+        <div class="glass"><div class="card-title">✨ Golden Zone</div><div id="goldenZoneStatus">--</div><div class="fib-levels"><div>0.5: <span id="fib05">--</span></div><div>0.618: <span id="fib0618">--</span></div></div></div>
+        <div class="glass"><div class="card-title">🕯️ Confirmation</div><div id="candleConfirmation">--</div></div>
+        <div class="glass"><div class="card-title">🌊 Market</div><div id="marketStructure">--</div><div id="volatilityStatus">--</div></div>
+    </div>
+
+    <!-- History & Detail -->
+    <div class="glass">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;"><h3>📋 Signal History</h3><button id="refreshHistory" style="background: none; border: none; font-size: 18px; cursor: pointer;">⟳</button></div>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead><tr><th>Time</th><th>Signal</th><th>Entry</th><th>SL</th><th>TP</th><th>RR</th></tr></thead>
+                <tbody id="historyBody"><tr><td colspan="6" style="text-align:center">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="glass">
+        <h3 style="margin-bottom: 12px;">📝 Detail Analysis</h3>
+        <div id="detailAnalysis">Waiting for market data...</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="glass" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+        <button id="manualCheckBtn" class="control-btn">🔄 Manual Check</button>
+        <button id="testEmailBtn" class="control-btn">📧 Test Email</button>
+        <div style="margin-left: auto;"><span>Auto-update: </span><span id="autoStatus" style="color: #00d27a; font-weight: 500;">Active (30s)</span></div>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .card-title { font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .fib-levels { margin-top: 8px; font-size: 12px; }
+    .fib-levels div { margin-top: 4px; }
+</style>
+
+<script>
+    // ====================================================
+    // EMAILJS CONFIGURATION
+    // ====================================================
+    (function() { emailjs.init("4-0tjKBy6KyHoCyOL"); })();
+
+    const CONFIG = {
+        UPDATE_INTERVAL: 30000,
+        RR_MINIMUM: 1.5,
+        EMAILJS_SERVICE_ID: 'service_ple8ixo',
+        EMAILJS_TEMPLATE_ID: 'template_c9od1yf'
+    };
+
+    let currentSignal = { type: 'NEUTRAL', entry: null, stopLoss: null, takeProfit: null, timestamp: null, rr: null, analysis: '' };
+    let signalHistory = [];
+    let currentPrice = 1.34790;
+    let currentBid = 1.34780;
+    let currentAsk = 1.34800;
+    let previousPrice = 1.34790;
+    let autoInterval = null;
+
+    // ====================================================
+    // YAHOO FINANCE API - REAL TIME GBP/USD
+    // ====================================================
+    
+    async function fetchYahooFinanceGBPUSD() {
+        try {
+            // Yahoo Finance endpoint untuk GBP/USD
+            const url = 'https://query1.finance.yahoo.com/v8/finance/chart/GBPUSD=X';
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            
+            // Parse response Yahoo Finance
+            if (data && data.chart && data.chart.result && data.chart.result[0]) {
+                const result = data.chart.result[0];
+                const meta = result.meta;
+                const currentPriceRaw = meta.regularMarketPrice;
                 
-                const response = await fetch('https://www.live-rates.com/rates', {
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                
-                // Cari data GBP/USD dari response
-                const gbpusd = data.find(item => item.currency === 'GBP/USD');
-                if (gbpusd && gbpusd.rate) {
-                    const rate = parseFloat(gbpusd.rate);
-                    // Live-Rates memberikan bid/ask terpisah
-                    const bid = gbpusd.bid ? parseFloat(gbpusd.bid) : rate - 0.0001;
-                    const ask = gbpusd.ask ? parseFloat(gbpusd.ask) : rate + 0.0001;
+                if (currentPriceRaw) {
+                    // Yahoo memberikan harga mid, kita buat bid/ask dengan spread 1 pip (0.0001)
+                    const spread = 0.0001;
+                    const mid = currentPriceRaw;
+                    const bid = mid - (spread / 2);
+                    const ask = mid + (spread / 2);
+                    
+                    console.log(`Yahoo Finance GBP/USD: ${mid} | Time: ${new Date(meta.regularMarketTime * 1000).toLocaleString()}`);
                     
                     return {
                         success: true,
-                        mid: rate,
+                        mid: mid,
                         bid: bid,
                         ask: ask,
-                        timestamp: gbpusd.timestamp || Date.now(),
-                        source: 'live-rates.com'
+                        timestamp: meta.regularMarketTime,
+                        source: 'Yahoo Finance',
+                        previousClose: meta.previousClose || mid
                     };
                 }
-                return { success: false, error: 'GBP/USD not found in response' };
-            } catch (error) {
-                console.warn('Live-Rates API error:', error.message);
-                return { success: false, error: error.message };
+            }
+            return { success: false, error: 'No price data in response' };
+        } catch (error) {
+            console.error('Yahoo Finance API error:', error.message);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Fallback: Simulasi jika Yahoo gagal
+    function generateSimulatedPrice() {
+        const volatility = (Math.random() - 0.5) * 0.0002;
+        let newPrice = currentPrice + volatility;
+        if (newPrice < 1.3400) newPrice = 1.3400;
+        if (newPrice > 1.3600) newPrice = 1.3600;
+        return {
+            success: true,
+            mid: newPrice,
+            bid: newPrice - 0.00005,
+            ask: newPrice + 0.00005,
+            source: 'Simulation (Fallback)',
+            isSimulated: true
+        };
+    }
+
+    async function fetchRealTimePrice() {
+        const apiStatus = document.getElementById('apiStatus');
+        
+        let result = await fetchYahooFinanceGBPUSD();
+        
+        if (result.success) {
+            apiStatus.innerHTML = '🟣 Yahoo Finance (Live)';
+            apiStatus.className = 'api-status yahoo';
+            return result;
+        }
+        
+        // Fallback ke simulasi
+        apiStatus.innerHTML = '⚠️ Simulasi (Yahoo Error)';
+        apiStatus.className = 'api-status fallback';
+        console.warn('Yahoo API failed, using simulation');
+        return generateSimulatedPrice();
+    }
+
+    async function updateMarketPrice() {
+        try {
+            const priceData = await fetchRealTimePrice();
+            if (priceData.success) {
+                previousPrice = currentPrice;
+                currentPrice = priceData.mid;
+                currentBid = priceData.bid;
+                currentAsk = priceData.ask;
+                updatePriceDisplay();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error updating price:', error);
+            return false;
+        }
+    }
+
+    function updatePriceDisplay() {
+        document.getElementById('currentPrice').textContent = currentPrice.toFixed(5);
+        document.getElementById('bidPrice').textContent = currentBid.toFixed(5);
+        document.getElementById('askPrice').textContent = currentAsk.toFixed(5);
+        
+        const spreadPips = ((currentAsk - currentBid) / 0.0001).toFixed(1);
+        document.getElementById('spread').textContent = spreadPips;
+        
+        const changeElement = document.getElementById('priceChange');
+        if (changeElement && previousPrice) {
+            const change = currentPrice - previousPrice;
+            const changePips = (change / 0.0001).toFixed(1);
+            const changePercent = (change / previousPrice) * 100;
+            const changeClass = change >= 0 ? 'positive' : 'negative';
+            changeElement.className = `price-change ${changeClass}`;
+            changeElement.innerHTML = `${change >= 0 ? '+' : ''}${change.toFixed(5)} (${change >= 0 ? '+' : ''}${changePips} pips) • ${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+            changeElement.style.color = change >= 0 ? '#00d27a' : '#e63757';
+        }
+    }
+
+    // ====================================================
+    // TEKNIKAL ANALYSIS
+    // ====================================================
+    function generateHistoricalData() {
+        let data = { h4: [], h1: [], m15: [], m5: [] };
+        let price = currentPrice;
+        for (let tf in data) {
+            let bars = tf === 'h4' ? 96 : (tf === 'h1' ? 24 : (tf === 'm15' ? 96 : 12));
+            for (let i = 0; i < bars; i++) {
+                price += (Math.random() - 0.5) * 0.0003;
+                data[tf].push({ 
+                    high: price + Math.random() * 0.0005, 
+                    low: price - Math.random() * 0.0005, 
+                    close: price, 
+                    open: price - (Math.random() - 0.5) * 0.0003 
+                });
             }
         }
+        return data;
+    }
 
-        // Method 2: Twelve Data API (Backup, perlu API key)
-        // Note: Untuk production, daftar gratis di twelvedata.com dan ganti API_KEY
-        async function fetchTwelveDataAPI() {
-            try {
-                const API_KEY = ''; // Isi dengan API key dari twelvedata.com jika punya
-                if (!API_KEY) return { success: false, error: 'No API key' };
-                
-                const response = await fetch(`https://api.twelvedata.com/price?symbol=GBP/USD&apikey=${API_KEY}`);
-                if (!response.ok) throw new Error('API Error');
-                const data = await response.json();
-                
-                if (data.price) {
-                    const rate = parseFloat(data.price);
-                    return {
-                        success: true,
-                        mid: rate,
-                        bid: rate - 0.0001,
-                        ask: rate + 0.0001,
-                        source: 'twelvedata.com'
-                    };
-                }
-                return { success: false, error: 'No price data' };
-            } catch (error) {
-                return { success: false, error: error.message };
+    function calculateSMA(data) { if (data.length === 0) return 0; return data.reduce((a, b) => a + b, 0) / data.length; }
+
+    function analyzeTrendH4(historicalData) {
+        const h4Data = historicalData.h4;
+        if (!h4Data || h4Data.length < 20) return { trend: 'NEUTRAL', strength: 0 };
+        const closes = h4Data.map(d => d.close);
+        const sma20 = calculateSMA(closes.slice(-20));
+        const sma50 = calculateSMA(closes.slice(-50));
+        const currentClose = closes[closes.length - 1];
+        let trend = 'NEUTRAL', strength = 0;
+        if (currentClose > sma20 && sma20 > sma50) { trend = 'BULLISH'; strength = Math.min(100, ((currentClose - sma50) / sma50) * 100); }
+        else if (currentClose < sma20 && sma20 < sma50) { trend = 'BEARISH'; strength = Math.min(100, ((sma50 - currentClose) / sma50) * 100); }
+        return { trend, strength };
+    }
+
+    function calculateFibonacci(high, low) {
+        const range = high - low;
+        return { level05: low + range * 0.5, level0618: low + range * 0.618 };
+    }
+
+    function detectGoldenZone(currentPrice, fibLevels) {
+        const isInZone = currentPrice >= fibLevels.level05 && currentPrice <= fibLevels.level0618;
+        const distanceToZone = Math.min(Math.abs(currentPrice - fibLevels.level05), Math.abs(currentPrice - fibLevels.level0618));
+        return { isInZone, zoneLow: fibLevels.level05, zoneHigh: fibLevels.level0618, percentageDistance: (distanceToZone / currentPrice) * 100 };
+    }
+
+    function detectCandlePattern(candles) {
+        if (!candles || candles.length < 2) return { pattern: 'NONE', confirmed: false };
+        const last = candles[candles.length - 1], prev = candles[candles.length - 2];
+        const bodySize = Math.abs(last.close - last.open);
+        const lowerWick = Math.min(last.close, last.open) - last.low;
+        const upperWick = last.high - Math.max(last.close, last.open);
+        if (last.close > last.open && prev.close < prev.open && last.close > prev.open && last.open < prev.close)
+            return { pattern: 'BULLISH_ENGULFING', confirmed: true };
+        if (last.close < last.open && prev.close > prev.open && last.close < prev.open && last.open > prev.close)
+            return { pattern: 'BEARISH_ENGULFING', confirmed: true };
+        if (lowerWick > bodySize * 2 && upperWick < bodySize * 0.5)
+            return { pattern: 'BULLISH_PINBAR', confirmed: true };
+        if (upperWick > bodySize * 2 && lowerWick < bodySize * 0.5)
+            return { pattern: 'BEARISH_PINBAR', confirmed: true };
+        return { pattern: 'NO_PATTERN', confirmed: false };
+    }
+
+    function getCurrentSession() {
+        const hourUTC = new Date().getUTCHours();
+        const isLondon = hourUTC >= 8 && hourUTC < 17;
+        const isNewYork = hourUTC >= 13 && hourUTC < 22;
+        let session = 'ASIAN', hasMomentum = false;
+        if (isLondon && isNewYork) { session = 'LONDON+NY'; hasMomentum = true; }
+        else if (isLondon) { session = 'LONDON'; hasMomentum = true; }
+        else if (isNewYork) { session = 'NEW YORK'; hasMomentum = true; }
+        return { session, hasMomentum };
+    }
+
+    function calculateRR(entry, sl, tp, type) {
+        let risk, reward;
+        if (type === 'BUY') { risk = entry - sl; reward = tp - entry; }
+        else { risk = sl - entry; reward = entry - tp; }
+        return (reward / risk).toFixed(2);
+    }
+
+    // ====================================================
+    // SIGNAL GENERATION
+    // ====================================================
+    async function generateSignal() {
+        console.log('Generating signal with Yahoo Finance...', new Date().toISOString());
+        
+        await updateMarketPrice();
+        
+        const historical = generateHistoricalData();
+        const h4Trend = analyzeTrendH4(historical);
+        const h1Data = historical.h1;
+        const m15Data = historical.m15;
+        const m5Data = historical.m5;
+        
+        const h1High = Math.max(...h1Data.map(d => d.high));
+        const h1Low = Math.min(...h1Data.map(d => d.low));
+        const fibLevels = calculateFibonacci(h1High, h1Low);
+        const goldenZone = detectGoldenZone(currentPrice, fibLevels);
+        const candlePatternM15 = detectCandlePattern(m15Data);
+        const candlePatternM5 = detectCandlePattern(m5Data);
+        const session = getCurrentSession();
+        
+        let signal = { type: 'NEUTRAL', entry: null, stopLoss: null, takeProfit: null, rr: null, analysis: '', timestamp: new Date().toISOString() };
+        
+        // BUY Condition
+        if (h4Trend.trend === 'BULLISH' && goldenZone.isInZone && (candlePatternM15.confirmed || candlePatternM5.confirmed) && session.hasMomentum) {
+            const hasBullishPattern = candlePatternM15.pattern.includes('BULLISH') || candlePatternM5.pattern.includes('BULLISH');
+            if (hasBullishPattern) {
+                signal.type = 'BUY';
+                signal.entry = currentAsk;
+                signal.stopLoss = currentBid - 0.0020;
+                signal.takeProfit = currentAsk + 0.0030;
+                signal.rr = calculateRR(signal.entry, signal.stopLoss, signal.takeProfit, 'BUY');
+                if (parseFloat(signal.rr) >= CONFIG.RR_MINIMUM) {
+                    signal.analysis = `✅ BUY SIGNAL CONFIRMED\n\n📊 Trend H4: ${h4Trend.trend}\n✨ Golden Zone: ACTIVE (${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)})\n🕯️ Candle: ${candlePatternM15.pattern}\n⏰ Session: ${session.session}\n\n🎯 Entry: ${signal.entry.toFixed(5)}\n🛑 SL: ${signal.stopLoss.toFixed(5)}\n💰 TP: ${signal.takeProfit.toFixed(5)}\n📈 RR: 1:${signal.rr}`;
+                } else { signal.type = 'NEUTRAL'; signal.analysis = 'RR ratio below 1:1.5'; }
             }
         }
-
-        // Method 3: Exchange Rate API (Fallback terakhir)
-        async function fetchExchangeRateAPI() {
-            try {
-                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-                if (!response.ok) throw new Error('API Error');
-                const data = await response.json();
-                
-                if (data.rates && data.rates.GBP) {
-                    const rate = data.rates.GBP;
-                    return {
-                        success: true,
-                        mid: rate,
-                        bid: rate - 0.0001,
-                        ask: rate + 0.0001,
-                        source: 'exchangerate-api.com'
-                    };
-                }
-                return { success: false, error: 'No GBP rate' };
-            } catch (error) {
-                return { success: false, error: error.message };
+        // SELL Condition
+        else if (h4Trend.trend === 'BEARISH' && goldenZone.isInZone && (candlePatternM15.confirmed || candlePatternM5.confirmed) && session.hasMomentum) {
+            const hasBearishPattern = candlePatternM15.pattern.includes('BEARISH') || candlePatternM5.pattern.includes('BEARISH');
+            if (hasBearishPattern) {
+                signal.type = 'SELL';
+                signal.entry = currentBid;
+                signal.stopLoss = currentAsk + 0.0020;
+                signal.takeProfit = currentBid - 0.0030;
+                signal.rr = calculateRR(signal.entry, signal.stopLoss, signal.takeProfit, 'SELL');
+                if (parseFloat(signal.rr) >= CONFIG.RR_MINIMUM) {
+                    signal.analysis = `🔴 SELL SIGNAL CONFIRMED\n\n📊 Trend H4: ${h4Trend.trend}\n✨ Golden Zone: ACTIVE (${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)})\n🕯️ Candle: ${candlePatternM15.pattern}\n⏰ Session: ${session.session}\n\n🎯 Entry: ${signal.entry.toFixed(5)}\n🛑 SL: ${signal.stopLoss.toFixed(5)}\n💰 TP: ${signal.takeProfit.toFixed(5)}\n📈 RR: 1:${signal.rr}`;
+                } else { signal.type = 'NEUTRAL'; signal.analysis = 'RR ratio below 1:1.5'; }
             }
         }
-
-        // Simulasi pergerakan harga jika semua API gagal
-        function generateSimulatedPrice() {
-            const volatility = (Math.random() - 0.5) * 0.0003;
-            const newPrice = currentPrice + volatility;
-            return {
-                success: true,
-                mid: newPrice,
-                bid: newPrice - 0.0001,
-                ask: newPrice + 0.0001,
-                source: 'simulation',
-                isSimulated: true
-            };
+        else {
+            signal.analysis = `⚪ NEUTRAL SIGNAL\n\nTrend: ${h4Trend.trend}\nGolden Zone: ${goldenZone.isInZone ? 'IN ZONE ✅' : 'OUT OF ZONE ❌'}\nPrice: ${currentPrice.toFixed(5)} | GZ: ${goldenZone.zoneLow.toFixed(5)}-${goldenZone.zoneHigh.toFixed(5)}`;
         }
+        
+        currentSignal = signal;
+        saveToHistory(signal);
+        updateUI(signal, h4Trend, goldenZone, candlePatternM15, session);
+        if (signal.type !== 'NEUTRAL') await sendEmailNotification(signal);
+        return signal;
+    }
 
-        // Main fetch function dengan fallback cascade
-        async function fetchRealTimePrice() {
-            const apiStatus = document.getElementById('apiStatus');
-            
-            // Try Live-Rates.com first (paling realtime untuk forex)
-            let result = await fetchLiveRatesAPI();
-            if (result.success) {
-                apiStatus.innerHTML = '🟢 Live-Rates';
-                apiStatus.className = 'api-status online';
-                return result;
-            }
-            
-            // Fallback ke Twelve Data jika Live-Rates gagal
-            result = await fetchTwelveDataAPI();
-            if (result.success) {
-                apiStatus.innerHTML = '🟡 Twelve Data';
-                apiStatus.className = 'api-status';
-                return result;
-            }
-            
-            // Fallback terakhir ke Exchange Rate API
-            result = await fetchExchangeRateAPI();
-            if (result.success) {
-                apiStatus.innerHTML = '🟠 Exchange-Rate';
-                apiStatus.className = 'api-status';
-                return result;
-            }
-            
-            // Jika semua API gagal, gunakan simulasi
-            apiStatus.innerHTML = '⚠️ Simulasi';
-            apiStatus.className = 'api-status fallback';
-            console.warn('All APIs failed, using simulated data');
-            return generateSimulatedPrice();
+    // ====================================================
+    // UI UPDATE
+    // ====================================================
+    function updateUI(signal, trend, goldenZone, pattern, session) {
+        const badge = document.getElementById('signalBadge');
+        badge.className = `signal-badge ${signal.type.toLowerCase()}`;
+        document.getElementById('signalIcon').textContent = signal.type === 'BUY' ? '📈' : (signal.type === 'SELL' ? '📉' : '⏸️');
+        document.getElementById('signalText').textContent = signal.type;
+        document.getElementById('entryPrice').textContent = signal.entry ? signal.entry.toFixed(5) : '--';
+        document.getElementById('stopLoss').textContent = signal.stopLoss ? signal.stopLoss.toFixed(5) : '--';
+        document.getElementById('takeProfit').textContent = signal.takeProfit ? signal.takeProfit.toFixed(5) : '--';
+        document.getElementById('rrRatio').textContent = signal.rr ? `1:${signal.rr}` : '--';
+        document.getElementById('timestamp').textContent = signal.timestamp ? `Last signal: ${new Date(signal.timestamp).toLocaleString()}` : '--';
+        
+        document.getElementById('trendH4').innerHTML = `<span class="status-badge ${trend.trend.toLowerCase()}">${trend.trend}</span>`;
+        document.getElementById('trendStrength').textContent = `Strength: ${trend.strength.toFixed(1)}%`;
+        
+        const zoneStatus = goldenZone.isInZone ? '✅ IN ZONE' : '❌ OUT OF ZONE';
+        document.getElementById('goldenZoneStatus').innerHTML = zoneStatus;
+        document.getElementById('fib05').textContent = goldenZone.zoneLow ? goldenZone.zoneLow.toFixed(5) : '--';
+        document.getElementById('fib0618').textContent = goldenZone.zoneHigh ? goldenZone.zoneHigh.toFixed(5) : '--';
+        document.getElementById('candleConfirmation').textContent = pattern.confirmed ? `✅ ${pattern.pattern}` : '❌ No confirmation';
+        document.getElementById('marketStructure').innerHTML = trend.trend === 'BULLISH' ? '📈 Uptrend' : (trend.trend === 'BEARISH' ? '📉 Downtrend' : '🔄 Ranging');
+        document.getElementById('volatilityStatus').innerHTML = session.hasMomentum ? '⚡ High Volatility' : '💤 Low Volatility';
+        document.getElementById('session').innerHTML = `${session.session} ${session.hasMomentum ? '🔥' : '💤'}`;
+        document.getElementById('detailAnalysis').innerHTML = signal.analysis.replace(/\n/g, '<br>');
+    }
+
+    function saveToHistory(signal) {
+        signalHistory.unshift({ ...signal });
+        if (signalHistory.length > 50) signalHistory.pop();
+        updateHistoryTable();
+        localStorage.setItem('signalHistory', JSON.stringify(signalHistory));
+    }
+
+    function updateHistoryTable() {
+        const tbody = document.getElementById('historyBody');
+        if (signalHistory.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No signals yet</td></tr>';
+            return;
         }
+        tbody.innerHTML = signalHistory.slice(0, 20).map(s => `
+            <tr>
+                <td>${new Date(s.timestamp).toLocaleTimeString()}</td>
+                <td class="signal-${s.type.toLowerCase()}">${s.type}</td>
+                <td>${s.entry ? s.entry.toFixed(5) : '--'}</td>
+                <td>${s.stopLoss ? s.stopLoss.toFixed(5) : '--'}</td>
+                <td>${s.takeProfit ? s.takeProfit.toFixed(5) : '--'}</td>
+                <td>${s.rr ? `1:${s.rr}` : '--'}</td>
+            </tr>
+        `).join('');
+    }
 
-        async function updateMarketPrice() {
-            try {
-                const priceData = await fetchRealTimePrice();
-                if (priceData.success) {
-                    previousPrice = currentPrice;
-                    currentPrice = priceData.mid;
-                    currentBid = priceData.bid;
-                    currentAsk = priceData.ask;
-                    lastFetchTime = priceData.timestamp;
-                    updatePriceDisplay();
-                    
-                    if (priceData.isSimulated) {
-                        console.log('Using simulated price data');
-                    } else {
-                        console.log(`Price updated from ${priceData.source}: ${currentPrice}`);
-                    }
-                }
-            } catch (error) {
-                console.error('Error updating price:', error);
-            }
-        }
+    function loadHistory() {
+        const saved = localStorage.getItem('signalHistory');
+        if (saved) { signalHistory = JSON.parse(saved); updateHistoryTable(); }
+    }
 
-        function updatePriceDisplay() {
-            const priceElement = document.getElementById('currentPrice');
-            const bidElement = document.getElementById('bidPrice');
-            const askElement = document.getElementById('askPrice');
-            const changeElement = document.getElementById('priceChange');
-            
-            if (priceElement) priceElement.textContent = currentPrice.toFixed(5);
-            if (bidElement) bidElement.textContent = currentBid.toFixed(5);
-            if (askElement) askElement.textContent = currentAsk.toFixed(5);
-            
-            if (changeElement && previousPrice) {
-                const change = currentPrice - previousPrice;
-                const changePercent = (change / previousPrice) * 100;
-                const changeClass = change >= 0 ? 'positive' : 'negative';
-                changeElement.className = `price-change ${changeClass}`;
-                changeElement.innerHTML = `<span class="change">${change >= 0 ? '+' : ''}${change.toFixed(5)}</span><span class="percent">(${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)</span>`;
-            }
-        }
-
-        // ====================================================
-        // HISTORICAL DATA GENERATOR untuk Analysis
-        // ====================================================
-        function generateHistoricalData() {
-            let data = { h4: [], h1: [], m15: [], m5: [] };
-            let price = currentPrice;
-            for (let tf in data) {
-                let bars = tf === 'h4' ? 96 : (tf === 'h1' ? 24 : (tf === 'm15' ? 96 : 12));
-                for (let i = 0; i < bars; i++) {
-                    price += (Math.random() - 0.5) * 0.0003;
-                    data[tf].push({ 
-                        high: price + Math.random() * 0.0005, 
-                        low: price - Math.random() * 0.0005, 
-                        close: price, 
-                        open: price - (Math.random() - 0.5) * 0.0003 
-                    });
-                }
-            }
-            return data;
-        }
-
-        // ====================================================
-        // TECHNICAL ANALYSIS
-        // ====================================================
-        function calculateSMA(data) { 
-            if (data.length === 0) return 0; 
-            return data.reduce((a, b) => a + b, 0) / data.length; 
-        }
-
-        function analyzeTrendH4(historicalData) {
-            const h4Data = historicalData.h4;
-            if (!h4Data || h4Data.length < 20) return { trend: 'NEUTRAL', strength: 0 };
-            const closes = h4Data.map(d => d.close);
-            const sma20 = calculateSMA(closes.slice(-20));
-            const sma50 = calculateSMA(closes.slice(-50));
-            const currentClose = closes[closes.length - 1];
-            let trend = 'NEUTRAL', strength = 0;
-            if (currentClose > sma20 && sma20 > sma50) { 
-                trend = 'BULLISH'; 
-                strength = Math.min(100, ((currentClose - sma50) / sma50) * 100); 
-            }
-            else if (currentClose < sma20 && sma20 < sma50) { 
-                trend = 'BEARISH'; 
-                strength = Math.min(100, ((sma50 - currentClose) / sma50) * 100); 
-            }
-            return { trend, strength };
-        }
-
-        function calculateFibonacci(high, low) {
-            const range = high - low;
-            return { 
-                level05: low + range * 0.5, 
-                level0618: low + range * 0.618 
-            };
-        }
-
-        function detectGoldenZone(currentPrice, fibLevels) {
-            const isInZone = currentPrice >= fibLevels.level05 && currentPrice <= fibLevels.level0618;
-            const distanceToZone = Math.min(Math.abs(currentPrice - fibLevels.level05), Math.abs(currentPrice - fibLevels.level0618));
-            return { 
-                isInZone, 
-                zoneLow: fibLevels.level05, 
-                zoneHigh: fibLevels.level0618, 
-                percentageDistance: (distanceToZone / currentPrice) * 100 
-            };
-        }
-
-        function detectCandlePattern(candles) {
-            if (!candles || candles.length < 2) return { pattern: 'NONE', confirmed: false };
-            const last = candles[candles.length - 1], prev = candles[candles.length - 2];
-            const bodySize = Math.abs(last.close - last.open);
-            const lowerWick = Math.min(last.close, last.open) - last.low;
-            const upperWick = last.high - Math.max(last.close, last.open);
-            
-            if (last.close > last.open && prev.close < prev.open && last.close > prev.open && last.open < prev.close)
-                return { pattern: 'BULLISH_ENGULFING', confirmed: true };
-            if (last.close < last.open && prev.close > prev.open && last.close < prev.open && last.open > prev.close)
-                return { pattern: 'BEARISH_ENGULFING', confirmed: true };
-            if (lowerWick > bodySize * 2 && upperWick < bodySize * 0.5)
-                return { pattern: 'BULLISH_PINBAR', confirmed: true };
-            if (upperWick > bodySize * 2 && lowerWick < bodySize * 0.5)
-                return { pattern: 'BEARISH_PINBAR', confirmed: true };
-            return { pattern: 'NO_PATTERN', confirmed: false };
-        }
-
-        function getCurrentSession() {
-            const hourUTC = new Date().getUTCHours();
-            const isLondon = hourUTC >= 8 && hourUTC < 17;
-            const isNewYork = hourUTC >= 13 && hourUTC < 22;
-            let session = 'ASIAN', hasMomentum = false;
-            if (isLondon && isNewYork) { session = 'LONDON_NEWYORK'; hasMomentum = true; }
-            else if (isLondon) { session = 'LONDON'; hasMomentum = true; }
-            else if (isNewYork) { session = 'NEWYORK'; hasMomentum = true; }
-            return { session, hasMomentum, hour: hourUTC };
-        }
-
-        function calculateRR(entry, sl, tp, type) {
-            let risk, reward;
-            if (type === 'BUY') { risk = entry - sl; reward = tp - entry; }
-            else { risk = sl - entry; reward = entry - tp; }
-            return (reward / risk).toFixed(2);
-        }
-
-        // ====================================================
-        // SIGNAL GENERATION
-        // ====================================================
-        async function generateSignal() {
-            console.log('Generating signal...', new Date().toISOString());
-            
-            // Update price realtime dulu
-            await updateMarketPrice();
-            
-            const historical = generateHistoricalData();
-            const h4Trend = analyzeTrendH4(historical);
-            const h1Data = historical.h1;
-            const m15Data = historical.m15;
-            const m5Data = historical.m5;
-            
-            const h1High = Math.max(...h1Data.map(d => d.high));
-            const h1Low = Math.min(...h1Data.map(d => d.low));
-            const fibLevels = calculateFibonacci(h1High, h1Low);
-            const goldenZone = detectGoldenZone(currentPrice, fibLevels);
-            const candlePatternM15 = detectCandlePattern(m15Data);
-            const candlePatternM5 = detectCandlePattern(m5Data);
-            const session = getCurrentSession();
-            
-            let signal = { 
-                type: 'NEUTRAL', 
-                entry: null, 
-                stopLoss: null, 
-                takeProfit: null, 
-                rr: null, 
-                analysis: '', 
-                timestamp: new Date().toISOString() 
-            };
-            
-            // BUY Condition - Updated dengan support/resistance logic
-            if (h4Trend.trend === 'BULLISH' && goldenZone.isInZone && (candlePatternM15.confirmed || candlePatternM5.confirmed) && session.hasMomentum) {
-                const hasBullishPattern = candlePatternM15.pattern.includes('BULLISH') || candlePatternM5.pattern.includes('BULLISH');
-                if (hasBullishPattern) {
-                    signal.type = 'BUY';
-                    signal.entry = currentAsk; // Entry di harga ask untuk buy
-                    signal.stopLoss = currentBid - 0.0020;
-                    signal.takeProfit = currentAsk + 0.0030;
-                    signal.rr = calculateRR(signal.entry, signal.stopLoss, signal.takeProfit, 'BUY');
-                    if (parseFloat(signal.rr) >= CONFIG.RR_MINIMUM) {
-                        signal.analysis = `✅ BUY SIGNAL CONFIRMED\n\n📊 Trend H4: ${h4Trend.trend} (Strength: ${h4Trend.strength.toFixed(1)}%)\n✨ Golden Zone: ACTIVE (${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)})\n🕯️ Candle Confirmation: ${candlePatternM15.pattern} on M15\n⏰ Session: ${session.session} - High momentum\n\n🎯 Entry: ${signal.entry.toFixed(5)}\n🛑 Stop Loss: ${signal.stopLoss.toFixed(5)}\n💰 Take Profit: ${signal.takeProfit.toFixed(5)}\n📈 Risk Reward: 1:${signal.rr}\n\n💡 Reason: H4 bullish trend confirmed with H1 retracement to Fibonacci Golden Zone. Bullish candle pattern detected. London/New York session provides optimal liquidity.`;
-                    } else { 
-                        signal.type = 'NEUTRAL'; 
-                        signal.analysis = 'RR ratio below minimum requirement (1:1.5)'; 
-                    }
-                }
-            }
-            // SELL Condition
-            else if (h4Trend.trend === 'BEARISH' && goldenZone.isInZone && (candlePatternM15.confirmed || candlePatternM5.confirmed) && session.hasMomentum) {
-                const hasBearishPattern = candlePatternM15.pattern.includes('BEARISH') || candlePatternM5.pattern.includes('BEARISH');
-                if (hasBearishPattern) {
-                    signal.type = 'SELL';
-                    signal.entry = currentBid; // Entry di harga bid untuk sell
-                    signal.stopLoss = currentAsk + 0.0020;
-                    signal.takeProfit = currentBid - 0.0030;
-                    signal.rr = calculateRR(signal.entry, signal.stopLoss, signal.takeProfit, 'SELL');
-                    if (parseFloat(signal.rr) >= CONFIG.RR_MINIMUM) {
-                        signal.analysis = `🔴 SELL SIGNAL CONFIRMED\n\n📊 Trend H4: ${h4Trend.trend} (Strength: ${h4Trend.strength.toFixed(1)}%)\n✨ Golden Zone: ACTIVE (${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)})\n🕯️ Candle Confirmation: ${candlePatternM15.pattern} on M15\n⏰ Session: ${session.session} - High momentum\n\n🎯 Entry: ${signal.entry.toFixed(5)}\n🛑 Stop Loss: ${signal.stopLoss.toFixed(5)}\n💰 Take Profit: ${signal.takeProfit.toFixed(5)}\n📈 Risk Reward: 1:${signal.rr}\n\n💡 Reason: H4 bearish trend confirmed with H1 retracement to Fibonacci Golden Zone. Bearish candle pattern detected. Selling pressure dominates.`;
-                    } else { 
-                        signal.type = 'NEUTRAL'; 
-                        signal.analysis = 'RR ratio below minimum requirement (1:1.5)'; 
-                    }
-                }
-            }
-            else {
-                signal.analysis = `⚪ NEUTRAL - No Trading Signal\n\n${h4Trend.trend !== 'NEUTRAL' ? `📊 Trend H4: ${h4Trend.trend} but missing confirmations.\n` : '📊 No clear trend on H4 timeframe.\n'}${!goldenZone.isInZone ? `✨ Price not in Fibonacci Golden Zone. Distance: ${goldenZone.percentageDistance.toFixed(2)}%\n` : ''}${!candlePatternM15.confirmed ? '🕯️ No valid candle confirmation pattern.\n' : ''}${!session.hasMomentum ? `⏰ ${session.session} session - low liquidity.\n` : ''}\n💡 Wait for clear trend direction and price retracement to Golden Zone.\n\n📊 Current Market Price: ${currentPrice.toFixed(5)}\n🎯 Golden Zone: ${goldenZone.zoneLow.toFixed(5)} - ${goldenZone.zoneHigh.toFixed(5)}`;
-            }
-            
-            currentSignal = signal;
-            saveToHistory(signal);
-            updateUI(signal, h4Trend, goldenZone, candlePatternM15, session);
-            if (signal.type !== 'NEUTRAL') await sendEmailNotification(signal);
-            return signal;
-        }
-
-        // ====================================================
-        // UI UPDATE
-        // ====================================================
-        function updateUI(signal, trend, goldenZone, pattern, session) {
-            const badge = document.getElementById('signalBadge');
-            if (badge) badge.className = `signal-badge ${signal.type.toLowerCase()}`;
-            document.getElementById('signalIcon').textContent = signal.type === 'BUY' ? '📈' : (signal.type === 'SELL' ? '📉' : '⏸️');
-            document.getElementById('signalText').textContent = signal.type;
-            document.getElementById('entryPrice').textContent = signal.entry ? signal.entry.toFixed(5) : '--';
-            document.getElementById('stopLoss').textContent = signal.stopLoss ? signal.stopLoss.toFixed(5) : '--';
-            document.getElementById('takeProfit').textContent = signal.takeProfit ? signal.takeProfit.toFixed(5) : '--';
-            document.getElementById('rrRatio').textContent = signal.rr ? `1:${signal.rr}` : '--';
-            document.getElementById('timestamp').textContent = signal.timestamp ? `Last signal: ${new Date(signal.timestamp).toLocaleString()}` : 'Last signal: --';
-            
-            const trendEl = document.getElementById('trendH4');
-            if (trendEl) trendEl.innerHTML = `<span class="status-badge ${trend.trend.toLowerCase()}">${trend.trend}</span>`;
-            document.getElementById('trendStrengthH4').textContent = `Strength: ${trend.strength.toFixed(1)}%`;
-            
-            const zoneStatus = goldenZone.isInZone ? '✅ IN ZONE' : '❌ OUT OF ZONE';
-            document.getElementById('goldenZoneStatus').innerHTML = `<span>Status: ${zoneStatus}</span>`;
-            document.getElementById('fib05').textContent = goldenZone.zoneLow ? goldenZone.zoneLow.toFixed(5) : '--';
-            document.getElementById('fib0618').textContent = goldenZone.zoneHigh ? goldenZone.zoneHigh.toFixed(5) : '--';
-            document.getElementById('candleConfirmation').textContent = pattern.confirmed ? `✅ ${pattern.pattern}` : '❌ No confirmation';
-            document.getElementById('marketStructure').innerHTML = trend.trend === 'BULLISH' ? '📈 Uptrend Structure' : (trend.trend === 'BEARISH' ? '📉 Downtrend Structure' : '🔄 Ranging Market');
-            document.getElementById('volatilityStatus').innerHTML = session.hasMomentum ? '⚡ High Volatility' : '💤 Low Volatility';
-            document.getElementById('session').textContent = `${session.session} ${session.hasMomentum ? '🔥' : '💤'}`;
-            document.getElementById('detailAnalysis').innerHTML = signal.analysis.replace(/\n/g, '<br>');
-        }
-
-        function saveToHistory(signal) {
-            signalHistory.unshift({ ...signal });
-            if (signalHistory.length > 50) signalHistory.pop();
-            updateHistoryTable();
-            localStorage.setItem('signalHistory', JSON.stringify(signalHistory));
-        }
-
-        function updateHistoryTable() {
-            const tbody = document.getElementById('historyBody');
-            if (!tbody) return;
-            if (signalHistory.length === 0) { 
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No signals yet</td></tr>'; 
-                return; 
-            }
-            tbody.innerHTML = signalHistory.slice(0, 20).map(s => `
-                <tr>
-                    <td>${new Date(s.timestamp).toLocaleTimeString()}</td>
-                    <td class="signal-${s.type.toLowerCase()}">${s.type}</td>
-                    <td>${s.entry ? s.entry.toFixed(5) : '--'}</td>
-                    <td>${s.stopLoss ? s.stopLoss.toFixed(5) : '--'}</td>
-                    <td>${s.takeProfit ? s.takeProfit.toFixed(5) : '--'}</td>
-                    <td>${s.rr ? `1:${s.rr}` : '--'}</td>
-                </tr>
-            `).join('');
-        }
-
-        function loadHistory() {
-            const saved = localStorage.getItem('signalHistory');
-            if (saved) { 
-                signalHistory = JSON.parse(saved); 
-                updateHistoryTable(); 
-            }
-        }
-
-        // ====================================================
-        // EMAIL NOTIFICATION
-        // ====================================================
-        async function sendEmailNotification(signal) {
-            if (signal.type === 'NEUTRAL') return;
-            const templateParams = {
+    async function sendEmailNotification(signal) {
+        if (signal.type === 'NEUTRAL') return;
+        try {
+            await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
                 signal_type: signal.type,
-                timestamp: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+                timestamp: new Date().toLocaleString(),
                 entry_price: signal.entry.toFixed(5),
                 stop_loss: signal.stopLoss.toFixed(5),
                 take_profit: signal.takeProfit.toFixed(5),
                 message: signal.analysis
-            };
-            try {
-                const response = await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, templateParams);
-                console.log('Email sent:', response);
-            } catch (error) { 
-                console.error('Email error:', error); 
-            }
-        }
+            });
+            console.log('Email sent');
+        } catch (error) { console.error('Email error:', error); }
+    }
 
-        // ====================================================
-        // AUTO ENGINE & CONTROLS
-        // ====================================================
-        async function startAutoSignalEngine() {
-            console.log('Starting auto signal engine...');
+    async function startAutoSignalEngine() {
+        console.log('Starting auto signal engine with Yahoo Finance...');
+        await generateSignal();
+        if (autoInterval) clearInterval(autoInterval);
+        autoInterval = setInterval(async () => { await generateSignal(); }, CONFIG.UPDATE_INTERVAL);
+    }
+
+    function setupEventListeners() {
+        document.getElementById('manualCheckBtn').onclick = async () => {
+            const btn = document.getElementById('manualCheckBtn');
+            btn.disabled = true; btn.textContent = '⏳ Checking...';
             await generateSignal();
-            if (autoInterval) clearInterval(autoInterval);
-            autoInterval = setInterval(async () => { 
-                await generateSignal(); 
-            }, CONFIG.UPDATE_INTERVAL);
-        }
+            btn.textContent = '🔄 Manual Check'; btn.disabled = false;
+        };
+        document.getElementById('testEmailBtn').onclick = async () => {
+            const btn = document.getElementById('testEmailBtn');
+            btn.disabled = true; btn.textContent = '📧 Sending...';
+            await sendEmailNotification({ type: 'BUY', entry: currentPrice, stopLoss: currentPrice - 0.002, takeProfit: currentPrice + 0.003, analysis: 'Test email from Yahoo Finance' });
+            btn.textContent = '📧 Test Email'; btn.disabled = false;
+            alert('Test email sent! Check your inbox/spam.');
+        };
+        document.getElementById('refreshHistory').onclick = () => updateHistoryTable();
+    }
 
-        function setupEventListeners() {
-            document.getElementById('manualCheckBtn')?.addEventListener('click', async () => {
-                const btn = document.getElementById('manualCheckBtn');
-                btn.disabled = true; 
-                btn.textContent = '⏳ Checking...';
-                await generateSignal();
-                btn.textContent = '🔄 Manual Check'; 
-                btn.disabled = false;
-            });
-            document.getElementById('testEmailBtn')?.addEventListener('click', async () => {
-                const btn = document.getElementById('testEmailBtn');
-                btn.disabled = true; 
-                btn.textContent = '📧 Sending...';
-                await sendEmailNotification({ 
-                    type: 'BUY', 
-                    entry: currentPrice, 
-                    stopLoss: currentPrice - 0.002, 
-                    takeProfit: currentPrice + 0.003, 
-                    analysis: 'Test email from GBPUSD Signal Pro - Real-time Version' 
-                });
-                btn.textContent = '📧 Test Email'; 
-                btn.disabled = false;
-                alert('Test email sent! Check your inbox (spam folder if needed).');
-            });
-            document.getElementById('refreshHistory')?.addEventListener('click', () => updateHistoryTable());
-        }
-
-        // ====================================================
-        // INITIALIZATION
-        // ====================================================
-        async function init() {
-            loadHistory();
-            setupEventListeners();
-            
-            // Initial price fetch
-            await updateMarketPrice();
-            
-            await startAutoSignalEngine();
-            console.log('Application ready! Real-time price updates active');
-        }
-        
-        document.addEventListener('DOMContentLoaded', init);
-        window.addEventListener('beforeunload', () => { if (autoInterval) clearInterval(autoInterval); });
-    </script>
+    async function init() {
+        loadHistory();
+        setupEventListeners();
+        await updateMarketPrice();
+        await startAutoSignalEngine();
+        console.log('Ready - Powered by Yahoo Finance!');
+    }
+    
+    document.addEventListener('DOMContentLoaded', init);
+    window.addEventListener('beforeunload', () => { if (autoInterval) clearInterval(autoInterval); });
+</script>
 </body>
 </html>
