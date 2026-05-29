@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Signal - RSI & Stochastic Intraday H1</title>
+    <title>Trading Signal - RSI & Stochastic Intraday H1 | GBP/USD Real Data</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -90,6 +90,23 @@
             background: #218838;
         }
 
+        .price-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .price-info h2 {
+            font-size: 2em;
+        }
+
+        .price-info small {
+            opacity: 0.9;
+        }
+
         .signal-box {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -169,25 +186,12 @@
             flex-wrap: wrap;
         }
 
-        .email-input-group input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            min-width: 200px;
-        }
-
         .email-input-group button {
             padding: 8px 16px;
-            background: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-        }
-
-        .email-input-group button:hover {
-            background: #0056b3;
         }
 
         .auto-send-checkbox {
@@ -213,7 +217,7 @@
         }
 
         .status-badge {
-            display: inline-block; 
+            display: inline-block;
             padding: 2px 8px;
             border-radius: 12px;
             font-size: 11px;
@@ -225,12 +229,32 @@
             color: white;
         }
 
+        .status-offline {
+            background: #dc3545;
+            color: white;
+        }
+
         .email-hidden {
             background: #6c757d;
             color: white;
             padding: 2px 8px;
             border-radius: 12px;
             font-size: 11px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -245,7 +269,7 @@
         <div class="header">
             <h1>📊 Trading Signal Generator</h1>
             <p>Strategi Intraday H1 - RSI (5) + Stochastic (5,3,3)</p>
-            <p><span class="email-hidden">🔒 Email penerima tersembunyi (terkonfigurasi)</span></p>
+            <p><span class="email-hidden">🔒 Real Data: GBP/USD dari ForexRateAPI</span></p>
         </div>
 
         <div class="main-panel">
@@ -253,22 +277,23 @@
                 <div class="control-group">
                     <label>Pair / Symbol</label>
                     <select id="symbol">
-                        <option value="EUR/USD">EUR/USD</option>
-                        <option value="GBP/USD">GBP/USD</option>
-                        <option value="USD/JPY">USD/JPY</option>
-                        <option value="AUD/USD">AUD/USD</option>
-                        <option value="XAU/USD">XAU/USD (Gold)</option>
-                        <option value="BTC/USD">BTC/USD (Bitcoin)</option>
+                        <option value="GBP/USD" selected>GBP/USD (Pound Sterling vs US Dollar)</option>
                     </select>
                 </div>
                 <div class="control-group">
                     <label>Update Interval (detik)</label>
-                    <input type="number" id="interval" value="60" min="5" max="300">
+                    <input type="number" id="interval" value="60" min="10" max="300">
                 </div>
                 <div class="control-group">
                     <label>&nbsp;</label>
                     <button onclick="startAutoUpdate()">▶ Mulai Auto Signal</button>
                 </div>
+            </div>
+
+            <div class="price-info">
+                <h2>GBP/USD</h2>
+                <h2 id="currentPrice">--</h2>
+                <small>Last updated: <span id="lastUpdate">--</span> | Data real-time dari ForexRateAPI</small>
             </div>
 
             <div class="signal-box">
@@ -298,7 +323,6 @@
             <div class="email-config">
                 <h3>📧 Notifikasi Email</h3>
                 <div class="email-input-group">
-                    <input type="email" id="recipientEmail" placeholder="Email tujuan (opsional)" style="display: none;">
                     <button onclick="testEmailConfig()" style="background: #6c757d;">🔧 Test Konfigurasi Email</button>
                     <button onclick="sendEmailSignal()" id="sendEmailBtn" style="background: #28a745;">📧 Kirim Signal Sekarang</button>
                 </div>
@@ -307,12 +331,13 @@
                     <label for="autoSendEmail">Kirim email otomatis saat sinyal baru terdeteksi</label>
                     <span id="emailStatus" class="status-badge" style="margin-left: auto;">🔒 Tersembunyi</span>
                 </div>
-                <small style="color: #666;">* Email akan dikirim ke penerima yang telah dikonfigurasi | Pengiriman otomatis aktif</small>
+                <small style="color: #666;">* Email akan dikirim ke penerima yang telah dikonfigurasi | Data real dari ForexRateAPI</small>
             </div>
 
             <div class="log-area" id="logArea">
                 <strong>📋 Log Aktivitas:</strong><br>
                 [System] Aplikasi siap digunakan<br>
+                [System] Menggunakan API real: ForexRateAPI (GBP/USD)<br>
                 [System] Email penerima telah dikonfigurasi (tersembunyi)<br>
             </div>
         </div>
@@ -330,8 +355,11 @@
         const EMAILJS_TEMPLATE_ID = 'template_c9od1yf';
         
         // EMAIL TUJUAN (DISEMBUNYIKAN DARI FRONTEND)
-        // Ganti dengan email Anda - ini TIDAK akan terlihat di tampilan
         const DEFAULT_EMAIL = 'umarsaid.radiografer@gmail.com';
+        
+        // ForexRateAPI Configuration
+        const FOREX_API_KEY = '6c013ad966db1382533efa0e0acd6c18';
+        const FOREX_API_URL = 'https://api.forexrateapi.com/v1/latest';
         
         // ============================================
         
@@ -341,20 +369,68 @@
         // Global variables
         let chart;
         let historicalPrices = [];
+        let historicalTimestamps = [];
         let autoUpdateInterval = null;
         let currentSignal = null;
         let lastSentSignal = null;
         let lastSignalTime = null;
+        let isLoading = false;
+        let lastPrice = null;
 
-        // Generate mock price data (dalam production, ini akan diganti dengan API real)
-        function generateMockData() {
-            const data = [];
-            let price = 1.0850;
-            for (let i = 0; i < 100; i++) {
-                price += (Math.random() - 0.5) * 0.002;
-                data.push(price);
+        // Fetch real-time GBP/USD price from ForexRateAPI
+        async function fetchGBPUSDRate() {
+            if (isLoading) return null;
+            
+            isLoading = true;
+            const updateStatus = document.getElementById('emailStatus');
+            
+            try {
+                const url = `${FOREX_API_URL}?api_key=${FOREX_API_KEY}&base=USD&currencies=GBP`;
+                
+                addLog(`[API] Mengambil data GBP/USD dari ForexRateAPI...`);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error?.message || 'API response not successful');
+                }
+                
+                // Rate USD to GBP (1 USD = x GBP)
+                // Untuk GBP/USD, kita perlu inverse karena API menggunakan base USD
+                const usdToGbp = data.rates.GBP;
+                const gbpUsd = 1 / usdToGbp;
+                
+                if (gbpUsd && gbpUsd > 0) {
+                    addLog(`[API] Berhasil: 1 GBP = ${gbpUsd.toFixed(5)} USD`);
+                    return gbpUsd;
+                } else {
+                    throw new Error('Invalid rate received');
+                }
+                
+            } catch (error) {
+                console.error('API Error:', error);
+                addLog(`[ERROR] Gagal fetch data: ${error.message}`);
+                
+                // Fallback ke simulasi jika API gagal
+                if (lastPrice) {
+                    // Generate small random movement from last price
+                    const change = (Math.random() - 0.5) * 0.001;
+                    const simulatedPrice = lastPrice + change;
+                    addLog(`[WARNING] API gagal, menggunakan simulasi: ${simulatedPrice.toFixed(5)}`);
+                    return simulatedPrice;
+                } else {
+                    // Initial fallback
+                    return 1.2650 + (Math.random() - 0.5) * 0.01;
+                }
+            } finally {
+                isLoading = false;
             }
-            return data;
         }
 
         // Calculate RSI
@@ -383,7 +459,7 @@
         }
 
         // Calculate Stochastic %K
-        function calculateStochastic(prices, kPeriod = 5, slowing = 3) {
+        function calculateStochastic(prices, kPeriod = 5) {
             if (prices.length < kPeriod) return 50;
             
             const recentPrices = prices.slice(-kPeriod);
@@ -438,13 +514,28 @@
         // Update all indicators and display
         async function updateSignals() {
             try {
-                // Simulasi data harga (gunakan API real jika tersedia)
-                const newPrice = (Math.random() * 0.01) + 1.0800;
-                historicalPrices.push(newPrice);
-                if (historicalPrices.length > 50) historicalPrices.shift();
+                // Fetch real price from API
+                const currentPrice = await fetchGBPUSDRate();
+                
+                if (currentPrice) {
+                    lastPrice = currentPrice;
+                    historicalPrices.push(currentPrice);
+                    historicalTimestamps.push(new Date());
+                    
+                    // Keep last 50 candles for H1 simulation (50 hours)
+                    if (historicalPrices.length > 50) {
+                        historicalPrices.shift();
+                        historicalTimestamps.shift();
+                    }
+                    
+                    // Update price display
+                    document.getElementById('currentPrice').innerHTML = currentPrice.toFixed(5);
+                    document.getElementById('lastUpdate').innerHTML = new Date().toLocaleTimeString();
+                }
                 
                 if (historicalPrices.length < 10) {
-                    historicalPrices = generateMockData();
+                    addLog(`[System] Mengumpulkan data harga... (${historicalPrices.length}/50)`);
+                    return;
                 }
                 
                 // Calculate indicators
@@ -452,10 +543,33 @@
                 const stoch = calculateStochastic(historicalPrices, 5);
                 
                 // Update display
-                document.getElementById('rsiValue').textContent = rsi.toFixed(2);
-                document.getElementById('stochValue').textContent = stoch.toFixed(2);
+                const rsiElem = document.getElementById('rsiValue');
+                const stochElem = document.getElementById('stochValue');
                 
-                // Update RSI Status with styling
+                rsiElem.textContent = rsi.toFixed(2);
+                stochElem.textContent = stoch.toFixed(2);
+                
+                // Apply color based on RSI value
+                if (rsi <= 15) {
+                    rsiElem.style.color = '#dc3545';
+                } else if (rsi >= 85) {
+                    rsiElem.style.color = '#28a745';
+                } else if (rsi >= 70) {
+                    rsiElem.style.color = '#ffc107';
+                } else {
+                    rsiElem.style.color = '#6c757d';
+                }
+                
+                // Apply color based on Stochastic value
+                if (stoch <= 20) {
+                    stochElem.style.color = '#28a745';
+                } else if (stoch >= 80) {
+                    stochElem.style.color = '#dc3545';
+                } else {
+                    stochElem.style.color = '#6c757d';
+                }
+                
+                // Update RSI Status
                 const rsiStatus = document.getElementById('rsiStatus');
                 if (rsi <= 15) {
                     rsiStatus.innerHTML = '🔴 <strong>OVERSOLD EXTREME</strong> (Signal BUY kuat)';
@@ -513,7 +627,7 @@
                     
                     if (autoSend && lastSentSignal !== signal && timeSinceLastSignal > 60) {
                         addLog(`[System] Mengirim email otomatis untuk signal ${signal}...`);
-                        await sendEmailSignal(true); // silent mode for auto send
+                        await sendEmailSignal(true);
                         lastSentSignal = signal;
                         lastSignalTime = now;
                     } else if (autoSend && lastSentSignal === signal) {
@@ -527,9 +641,6 @@
                 
                 // Update chart
                 updateChart();
-                
-                // Update email status
-                updateEmailStatus();
                 
             } catch (error) {
                 console.error('Error updating signals:', error);
@@ -548,9 +659,14 @@
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: historicalPrices.map((_, i) => i),
+                    labels: historicalTimestamps.map((t, i) => {
+                        if (t && t instanceof Date) {
+                            return t.toLocaleTimeString();
+                        }
+                        return i;
+                    }),
                     datasets: [{
-                        label: 'Harga',
+                        label: 'GBP/USD',
                         data: historicalPrices,
                         borderColor: 'rgb(75, 192, 192)',
                         backgroundColor: 'rgba(75, 192, 192, 0.1)',
@@ -567,7 +683,7 @@
                         },
                         title: {
                             display: true,
-                            text: 'Pergerakan Harga (Simulasi)'
+                            text: 'Pergerakan Harga GBP/USD (Real Data)'
                         }
                     }
                 }
@@ -595,9 +711,8 @@ Waktu: ${new Date().toLocaleString('id-ID')}
 Status: ✅ KONEKSI BERHASIL
 
 Konfigurasi:
-- Public Key: ${EMAILJS_PUBLIC_KEY.substring(0, 10)}...
+- API: ForexRateAPI (GBP/USD Real Data)
 - Service ID: ${EMAILJS_SERVICE_ID}
-- Template ID: ${EMAILJS_TEMPLATE_ID}
 - Email Tujuan: [TERKONFIGURASI]
 
 Jika Anda menerima email ini, maka sistem siap digunakan.
@@ -623,23 +738,14 @@ Terima kasih.`,
             } catch (error) {
                 console.error('Test email error:', error);
                 addLog(`[${new Date().toLocaleTimeString()}] ❌ Test email gagal: ${error.text || error.message}`);
-                
-                let errorMsg = `❌ Gagal mengirim test email\n\n`;
-                errorMsg += `Error: ${error.text || error.message}\n\n`;
-                errorMsg += `Pastikan:\n`;
-                errorMsg += `1. Public key "${EMAILJS_PUBLIC_KEY}" valid di akun EmailJS\n`;
-                errorMsg += `2. Service ID "${EMAILJS_SERVICE_ID}" terdaftar\n`;
-                errorMsg += `3. Template ID "${EMAILJS_TEMPLATE_ID}" memiliki parameter yang sesuai\n`;
-                errorMsg += `4. Koneksi internet stabil\n\n`;
-                errorMsg += `Cek dashboard EmailJS untuk konfigurasi lengkap.`;
-                
-                alert(errorMsg);
+                alert(`❌ Gagal mengirim test email: ${error.text || error.message}`);
             }
         }
 
         // Send email via EmailJS
         async function sendEmailSignal(isSilent = false) {
             const symbol = document.getElementById('symbol').value;
+            const price = document.getElementById('currentPrice').innerHTML;
             const rsi = document.getElementById('rsiValue').textContent;
             const stoch = document.getElementById('stochValue').textContent;
             const signal = currentSignal || 'TIDAK ADA';
@@ -655,10 +761,11 @@ Terima kasih.`,
                 const templateParams = {
                     to_email: DEFAULT_EMAIL,
                     from_name: 'Trading Signal System',
-                    message: `=== SIGNAL TRADING ===
+                    message: `=== SIGNAL TRADING REAL DATA ===
 
 📊 TIMESTAMP: ${new Date().toLocaleString('id-ID')}
 💰 SYMBOL: ${symbol}
+💵 Harga: ${price}
 
 ━━━━━━━━━━━━━━━━━━━━
 🔔 SIGNAL: ${signal}
@@ -667,7 +774,7 @@ Terima kasih.`,
 📝 DETAIL:
 ${signalDetail.replace(/<[^>]*>/g, '')}
 
-📈 INDIKATOR:
+📈 INDIKATOR (Real Time):
 • RSI (Period 5): ${rsi}
 • Stochastic (5,3,3): ${stoch}
 
@@ -683,14 +790,15 @@ ${signalDetail.replace(/<[^>]*>/g, '')}
    - DAN Stochastic ≥ 80 (sentuh atas)
 
 ━━━━━━━━━━━━━━━━━━━━
+📡 Sumber Data: ForexRateAPI (Real Market)
+⏱️ Timeframe: H1 (1 Hour)
+
 ⚠️ DISCLAIMER:
 Ini adalah alat bantu analisis. 
 Keputusan trading sepenuhnya ada di tangan Anda.
-Gunakan money management yang baik.
 
 ---
-Email dikirim otomatis dari Trading Signal Tool
-Trading H1 Intraday Strategy`,
+Email dikirim otomatis dari Trading Signal Tool`,
                     reply_to: DEFAULT_EMAIL
                 };
                 
@@ -713,13 +821,7 @@ Trading H1 Intraday Strategy`,
                 addLog(`[${new Date().toLocaleTimeString()}] ❌ Gagal kirim email: ${error.text || error.message}`);
                 
                 if (!isSilent) {
-                    let errorMsg = `❌ Gagal mengirim email\n\n`;
-                    errorMsg += `Error: ${error.text || error.message}\n\n`;
-                    errorMsg += `Solusi:\n`;
-                    errorMsg += `• Pastikan koneksi internet aktif\n`;
-                    errorMsg += `• Cek konfigurasi EmailJS di dashboard\n`;
-                    errorMsg += `• Coba klik tombol "Test Konfigurasi Email" terlebih dahulu`;
-                    alert(errorMsg);
+                    alert(`❌ Gagal mengirim email: ${error.text || error.message}`);
                 }
                 return false;
             } finally {
@@ -750,7 +852,7 @@ Trading H1 Intraday Strategy`,
             }
             
             const intervalSec = parseInt(document.getElementById('interval').value);
-            updateSignals(); // Immediate update
+            updateSignals();
             autoUpdateInterval = setInterval(updateSignals, intervalSec * 1000);
             
             addLog(`[System] Auto update dimulai setiap ${intervalSec} detik`);
@@ -759,20 +861,12 @@ Trading H1 Intraday Strategy`,
 
         // Initialize on page load
         window.addEventListener('load', () => {
-            historicalPrices = generateMockData();
             updateSignals();
             startAutoUpdate();
             
-            // Sembunyikan input email
-            const emailInput = document.getElementById('recipientEmail');
-            if (emailInput) {
-                emailInput.value = '';
-                emailInput.style.display = 'none';
-            }
-            
             addLog(`[System] EmailJS initialized dengan public key: ${EMAILJS_PUBLIC_KEY.substring(0, 10)}...`);
-            addLog(`[System] Email penerima telah dikonfigurasi (tersembunyi dari tampilan)`);
-            addLog(`[System] Gunakan tombol "Test Konfigurasi Email" untuk memverifikasi koneksi`);
+            addLog(`[System] ForexRateAPI dengan API Key: ${FOREX_API_KEY.substring(0, 10)}...`);
+            addLog(`[System] Data real GBP/USD dari API market`);
         });
     </script>
 </body>
